@@ -19,18 +19,18 @@ const Lectures = () => {
       { name: "Introduction", index:0},
 ],
     Science: [
-      {name: "ACP", index: 19 },
-      { name: "Chapter 1", index: 0 },
-      { name: "Chapter 2", index: 1 },
+      { chapterName: "ACP", index: 19 },
+      { chapterName: "Chapter 1", index: 0 },
+      { chapterName: "Chapter 2", index: 1 },
     ],
     Maths: [
-      {name: "DPP", index: 19 },
-      { name: "Chapter 1", index: 0 },
-      { name: "Chapter 2", index: 1 },
+      {chapterName: "DPP", index: 19 },
+      { chapterName: "Chapter 1", index: 0 },
+      { chapterName: "Chapter 2", index: 1 },
     ],
     SST: [
-      { name: "Chapter 1", index: 0 },
-      { name: "Chapter 2", index: 1 },
+      { chapterName: "Chapter 1", index: 0 },
+      { chapterName: "Chapter 2", index: 1 },
     ],
     IT: [
       { name: "Chapter 1", index: 0 },
