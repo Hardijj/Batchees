@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import "../styles/ChapterLectures.css";
 import mlogo from "../assets/ntmlogo.jpg"; // ✅ Import logo
+import lectures from "./lectures";
 
 const ChapterLectures10 = () => {
   const { classId, subject, chapterIndex } = useParams();
