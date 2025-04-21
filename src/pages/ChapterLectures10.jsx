@@ -146,7 +146,7 @@ const ChapterLectures10 = () => {
                 rel="noopener noreferrer"
                 className="lecture-box"
               >
-                {lecture.name}
+                {lectures.name}
               </a>
             );
           }
@@ -168,7 +168,7 @@ const ChapterLectures10 = () => {
               key={index}
               to={`/video/10/${subject}/${chapterIndex}`}
               state={{
-                chapterName: lecture.name,
+                chapterName: lectures.name,
                 m3u8Url: lecture.m3u8Url,
                 notesUrl: lecture.notesUrl,
               }}
