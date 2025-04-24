@@ -58,7 +58,7 @@ const Lectures = () => {
       to={`/chapter-lectures/10/${subject}/${lecture.index}`}
             className="lecture-box"
           >
-            {lectures.name}
+            {lecture.name}
           </Link>
         ))}
       </div>
