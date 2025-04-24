@@ -14,6 +14,7 @@ const VideoPlayer = () => {
   const [studiedMinutes, setStudiedMinutes] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
   const chaptersName = localStorage.getItem("chapterName");
+  const lecturesName = localStorage.getItem("lectureName");
 
   const { chapterName, lectureName, m3u8Url, notesUrl } = location.state || {};
   const isLive = location.pathname.includes("/video/live");
@@ -188,7 +189,7 @@ const VideoPlayer = () => {
 
   const handleDownloadClick = () => {
     if (!m3u8Url) return;
-    const copyText = `/yl ${m3u8Url} -n ${chaptersName} ${lectureName} by Eduvibe`;
+    const copyText = `/yl ${m3u8Url} -n ${chaptersName} ${lecturesName} by Eduvibe`;
     navigator.clipboard.writeText(copyText).then(() => {
       setShowPopup(true);
     });
@@ -199,7 +200,7 @@ const VideoPlayer = () => {
       <h2>
         {isLive
           ? "🔴 Live Class"
-          : `Now Playing: ${chaptersName} - ${lectureName || "Unknown Lecture"}`}
+          : `Now Playing: ${chaptersName} - ${lecturesName || "Unknown Lecture"}`}
       </h2>
 
       <div style={{ position: "relative" }}>
@@ -221,7 +222,7 @@ const VideoPlayer = () => {
               boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
             }}
           >
-            Download
+            Download Lecture
           </button>
         </div>
       )}
