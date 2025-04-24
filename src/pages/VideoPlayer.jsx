@@ -15,7 +15,7 @@ const VideoPlayer = () => {
   const [showPopup, setShowPopup] = useState(false);
   const chapterName = localStorage.getItem("chapterName");
 
-  const { lectureName, m3u8Url, notesUrl } = location.state || {};
+  const { chapterName, lectureName, m3u8Url, notesUrl } = location.state || {};
   const isLive = location.pathname.includes("/video/live");
   const defaultLiveUrl = "m3u8_link_here";
   const telegramDownloaderLink = "https://t.me/your_downloader_group"; // Replace with actual link
