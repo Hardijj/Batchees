@@ -57,6 +57,10 @@ const Lectures = () => {
             key={index}
       to={`/chapter-lectures/10/${subject}/${lecture.index}`}
             className="lecture-box"
+            onClick={() => {
+              // Store chapter name and index in localStorage for later use
+              localStorage.setItem("chapterName", lecture.name);  // Store chapter name
+            }}
           >
             {lecture.name}
           </Link>
