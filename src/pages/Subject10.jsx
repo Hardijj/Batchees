@@ -17,7 +17,7 @@ const Subject10 = () => {
     Tuesday: { "17:00": "SST", "20:00": "Maths" },
     Wednesday: { "17:00": "Science", "20:00": "SST" },
     Thursday: { "17:00": "Science", "20:00": "SST" },
-    Friday: { "15:27": "Science", "15:50": "Maths" },
+    Friday: { "17:00": "Science", "20:00": "Maths" },
     Saturday: { "17:00": "Science", "20:00": "Maths" },
   };
 
@@ -34,8 +34,8 @@ const Subject10 = () => {
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
       const slots = [
-        { time: "15:27", start: 17 * 60, subject: schedule[day]?.["17:00"] },
-        { time: "15:50", start: 20 * 60, subject: schedule[day]?.["20:00"] },
+        { time: "17:00", start: 17 * 60, subject: schedule[day]?.["17:00"] },
+        { time: "20:00", start: 20 * 60, subject: schedule[day]?.["20:00"] },
       ];
 
       for (let slot of slots) {
