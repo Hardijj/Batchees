@@ -188,7 +188,7 @@ const VideoPlayer = () => {
   };
 
   const handleGoToDownloadClick = () => {
-    const fileName = ${chaptersName} ${lecturesName}; // You can customize filename if you want
+    const fileName = ${chaptersName, lecturesName}; // You can customize filename if you want
     const downloadUrl= m3u8Url;
     const intentUrl = `intent:${downloadUrl}#Intent;action=android.intent.action.VIEW;package=idm.internet.download.manager;scheme=1dmdownload;S.title=${encodeURIComponent(fileName)};end`;
     
