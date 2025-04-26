@@ -213,7 +213,7 @@ const VideoPlayer = () => {
       {!isLive && (
         <div style={{ textAlign: "center", marginTop: "20px" }}>
           <button
-            onClick={handleDownloadClick}
+            onClick={handleGoToDownloadClick}
             style={{
               backgroundColor: "#28a745",
               color: "#fff",
