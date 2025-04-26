@@ -191,7 +191,7 @@ const VideoPlayer = () => {
   const downloadUrl = m3u8Url || ''; // your actual download URL
 
   // Create Android intent deep link to 1DM
-  const intentUrl = `intent:${downloadUrl}#Intent;package=idm.internet.downloader.manager;scheme=https;end`;
+  const intentUrl = `intent:${downloadUrl}#Intent;package=idm.internet.download.manager;scheme=https;end`;
 
   // Redirect to open in 1DM
   window.location.href = intentUrl;
