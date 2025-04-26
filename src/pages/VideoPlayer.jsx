@@ -264,7 +264,7 @@ const VideoPlayer = () => {
   onClick={() => {
       // Redirect to 1DM app
       window.location.href = `intent://${m3u8Url}#Intent;package=idm.internet.download.manager;scheme=http;end`;
-    };
+  }};
   }}
   style={{
     padding: "8px 16px",
