@@ -187,13 +187,16 @@ const VideoPlayer = () => {
       .padStart(2, "0")}`;
   };
 
-  const handleDownloadClick = () => {
-    if (!m3u8Url) return;
-    const copyText = `/yl ${m3u8Url} -n ${chaptersName} ${lecturesName} by Eduvibe`;
-    navigator.clipboard.writeText(copyText).then(() => {
-      setShowPopup(true);
-    });
-  };
+  const handleGoToDownloadClick = () => {
+  // Ensure the URL is correctly formatted for 1DM to recognize
+  const downloadUrl = m3u8Url  '';  // Replace with your actual download link
+  
+  // Construct the 1DM intent URL
+  const oneDMUrl = `1dm://download?url=${encodeURIComponent(downloadUrl)}`;
+
+  // Open the 1DM app (if installed) and start the download
+  window.location.href = oneDMUrl;
+};
 
   return (
     <div>
@@ -261,11 +264,7 @@ const VideoPlayer = () => {
               Cancel
             </button>
             <button
-  onClick={() => {
-      // Redirect to 1DM app
-      window.location.href = `intent://${m3u8Url}#Intent;package=idm.internet.download.manager;scheme=http;end`;
-  }};
-  }}
+  onClick={handleGoToDownloadClick}
   style={{
     padding: "8px 16px",
     backgroundColor: "#007bff",
@@ -276,7 +275,7 @@ const VideoPlayer = () => {
     flex: 1,
   }}
 >
-  Go to Downloader
+  Go to Download
 </button>
           </div>
         </div>
