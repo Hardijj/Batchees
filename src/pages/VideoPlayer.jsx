@@ -261,19 +261,23 @@ const VideoPlayer = () => {
               Cancel
             </button>
             <button
-              onClick={() => window.open(telegramDownloaderLink, "_blank")}
-              style={{
-                padding: "8px 16px",
-                backgroundColor: "#007bff",
-                border: "none",
-                borderRadius: "5px",
-                color: "#fff",
-                fontWeight: "bold",
-                flex: 1,
-              }}
-            >
-              Go to Downloader
-            </button>
+  onClick={() => {
+      // Redirect to 1DM app
+      window.location.href = `intent://${m3u8Url}#Intent;package=idm.internet.download.manager;scheme=http;end`;
+    });
+  }}
+  style={{
+    padding: "8px 16px",
+    backgroundColor: "#007bff",
+    border: "none",
+    borderRadius: "5px",
+    color: "#fff",
+    fontWeight: "bold",
+    flex: 1,
+  }}
+>
+  Go to Downloader
+</button>
           </div>
         </div>
       )}
