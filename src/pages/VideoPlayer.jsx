@@ -189,7 +189,7 @@ const VideoPlayer = () => {
 
   const handleGoToDownloadClick = () => {
   // Ensure the URL is correctly formatted for 1DM to recognize
-  const downloadUrl = m3u8Url  '';  // Replace with your actual download link
+  const downloadUrl = m3u8Url;  // Replace with your actual download link
   
   // Construct the 1DM intent URL
   const oneDMUrl = `1dm://download?url=${encodeURIComponent(downloadUrl)}`;
