@@ -3,6 +3,8 @@ import videojs from "video.js";
 import "video.js/dist/video-js.css";
 import "videojs-contrib-quality-levels";
 import "videojs-hls-quality-selector";
+import "videojs-mobile-ui";
+import "videojs-seek-buttons";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const VideoPlayer = () => {
@@ -48,27 +50,34 @@ const VideoPlayer = () => {
     const videoSource = isLive ? defaultLiveUrl : m3u8Url || defaultLiveUrl;
 
     playerRef.current = videojs(videoRef.current, {
-      controls: true,
-      autoplay: false,
-      fluid: true,
-      playbackRates: [0.5, 1, 1.25, 1.5, 1.75, 2],
-      html5: {
-        vhs: {
-          overrideNative: true,
-          enableLowInitialPlaylist: true,
-        },
-      },
-      controlBar: {
-        children: [
-          "playToggle",
-          "progressControl",
-          "volumePanel",
-          "playbackRateMenuButton",
-          "qualitySelector",
-          "fullscreenToggle",
-        ],
-      },
-    });
+  controls: true,
+  autoplay: false,
+  fluid: true,
+  preload: 'auto',
+  playbackRates: [0.5, 1, 1.25, 1.5, 1.75, 2],
+  html5: {
+    vhs: {
+      overrideNative: true,
+      enableLowInitialPlaylist: true,
+    },
+  }
+});
+
+// Call plugins inside the `.ready()` function
+playerRef.current.ready(function () {
+  this.seekButtons({
+    forward: 10,
+    back: 10
+  });
+
+  this.mobileUi({
+    touchControls: {
+      tap: {
+        togglePlay: true
+      }
+    }
+  });
+});
 
     playerRef.current.src({
       src: videoSource,
