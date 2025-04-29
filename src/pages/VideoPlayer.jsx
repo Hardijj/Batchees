@@ -43,47 +43,55 @@ const VideoPlayer = () => {
 
     const stored = parseFloat(localStorage.getItem(`studyTime_${today}`)) || 0;
     setStudiedMinutes(Math.floor(stored / 60));
-  }, []);
-
+  }, [])
+  
   useEffect(() => {
-    if (!videoRef.current) return;
+  if (!videoRef.current) return;
 
-    const videoSource = isLive ? defaultLiveUrl : m3u8Url || defaultLiveUrl;
+  const videoSource = isLive ? defaultLiveUrl : m3u8Url || defaultLiveUrl;
 
-    playerRef.current = videojs(videoRef.current, {
-  controls: true,
-  autoplay: false,
-  fluid: true,
-  preload: 'auto',
-  playbackRates: [0.5, 1, 1.25, 1.5, 1.75, 2],
-  html5: {
-    vhs: {
-      overrideNative: true,
-      enableLowInitialPlaylist: true,
-    },
+  if (playerRef.current) {
+    playerRef.current.dispose();
   }
-});
 
-// Call plugins inside the `.ready()` function
-playerRef.current.ready(function () {
-  this.seekButtons({
-    forward: 10,
-    back: 10
-  });
-
-  this.mobileUi({
-    touchControls: {
-      tap: {
-        togglePlay: true
-      }
-    }
-  });
-});
-
-    playerRef.current.src({
-      src: videoSource,
-      type: "application/x-mpegURL",
+  playerRef.current = videojs(videoRef.current, {
+    controls: true,
+    autoplay: false,
+    fluid: true,
+    preload: "auto",
+    playbackRates: [0.5, 1, 1.25, 1.5, 1.75, 2],
+    html5: {
+      vhs: {
+        overrideNative: true,
+        enableLowInitialPlaylist: true,
+      },
+    },
+  }, function () {
+    this.seekButtons({
+      forward: 10,
+      back: 10,
     });
+
+    this.mobileUi({
+      touchControls: {
+        tap: {
+          togglePlay: true,
+        },
+      },
+    });
+  });
+
+  playerRef.current.src({
+    src: videoSource,
+    type: "application/x-mpegURL",
+  });
+
+  return () => {
+    if (playerRef.current) {
+      playerRef.current.dispose();
+    }
+  };
+}, [m3u8Url, isLive]);
 
     let sessionStart = null;
     let studyTimer = null;
