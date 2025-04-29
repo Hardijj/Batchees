@@ -86,13 +86,6 @@ const VideoPlayer = () => {
     type: "application/x-mpegURL",
   });
 
-  return () => {
-    if (playerRef.current) {
-      playerRef.current.dispose();
-    }
-  };
-}, [m3u8Url, isLive]);
-
     let sessionStart = null;
     let studyTimer = null;
 
