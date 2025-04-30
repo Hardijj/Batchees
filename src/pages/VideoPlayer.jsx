@@ -168,6 +168,32 @@ const VideoPlayer = () => {
       const tapX = touch.clientX - rect.left;
       const videoWidth = rect.width;
 
+      const videoEl = videoRef.current;
+let speedHeld = false;
+
+const handleTouchStart = () => {
+  if (playerRef.current && !speedHeld) {
+    speedHeld = true;
+    playerRef.current.playbackRate(2);
+  }
+};
+
+const handleTouchEnd = () => {
+  if (playerRef.current && speedHeld) {
+    speedHeld = false;
+    playerRef.current.playbackRate(1);
+  }
+};
+
+videoEl.addEventListener("touchstart", handleTouchStart);
+videoEl.addEventListener("touchend", handleTouchEnd);
+
+// Clean up on unmount
+return () => {
+  videoEl.removeEventListener("touchstart", handleTouchStart);
+  videoEl.removeEventListener("touchend", handleTouchEnd);
+};
+
       if (tapGap < 300) {
         if (tapX < videoWidth / 3) {
           playerRef.current.currentTime(playerRef.current.currentTime() - 10);
