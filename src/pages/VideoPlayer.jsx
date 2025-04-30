@@ -182,7 +182,7 @@ const VideoPlayer = () => {
         speedHeld = true;
         playerRef.current.playbackRate(2); // speed up
       }
-    }, 400); // start speeding after 400ms hold
+    }, 1000); // start speeding after 400ms hold
   };
 
   const handleTouchEnd = () => {
