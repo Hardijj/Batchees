@@ -168,31 +168,42 @@ const VideoPlayer = () => {
       const tapX = touch.clientX - rect.left;
       const videoWidth = rect.width;
 
-      const videoEl = videoRef.current;
-let speedHeld = false;
+  const videoEl = videoRef.current;
+  let holdTimeout = null;
+  let speedHeld = false;
 
-const handleTouchStart = () => {
-  if (playerRef.current && !speedHeld) {
-    speedHeld = true;
-    playerRef.current.playbackRate(2);
-  }
-};
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-const handleTouchEnd = () => {
-  if (playerRef.current && speedHeld) {
-    speedHeld = false;
-    playerRef.current.playbackRate(1);
-  }
-};
+  const handleTouchStart = () => {
+    if (!isMobile) return;
 
-videoEl.addEventListener("touchstart", handleTouchStart);
-videoEl.addEventListener("touchend", handleTouchEnd);
+    holdTimeout = setTimeout(() => {
+      if (playerRef.current && !speedHeld) {
+        speedHeld = true;
+        playerRef.current.playbackRate(2); // speed up
+      }
+    }, 400); // start speeding after 400ms hold
+  };
 
-// Clean up on unmount
-return () => {
-  videoEl.removeEventListener("touchstart", handleTouchStart);
-  videoEl.removeEventListener("touchend", handleTouchEnd);
-};
+  const handleTouchEnd = () => {
+    if (!isMobile) return;
+
+    clearTimeout(holdTimeout);
+    holdTimeout = null;
+
+    if (playerRef.current && speedHeld) {
+      speedHeld = false;
+      playerRef.current.playbackRate(1); // back to normal
+    }
+  };
+
+  videoEl.addEventListener("touchstart", handleTouchStart);
+  videoEl.addEventListener("touchend", handleTouchEnd);
+
+  return () => {
+    videoEl.removeEventListener("touchstart", handleTouchStart);
+    videoEl.removeEventListener("touchend", handleTouchEnd);
+  };
 
       if (tapGap < 300) {
         if (tapX < videoWidth / 3) {
