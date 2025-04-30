@@ -362,5 +362,6 @@ cleanupFns.push(() => {
     </div>
   );
 },
+            };
 
 export default VideoPlayer;
