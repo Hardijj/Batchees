@@ -157,9 +157,8 @@ const VideoPlayer = () => {
       });
     });
 
-    
+    const videoContainer = videoRef.current.parentElement;
       const videoEl = videoRef.current;
-const videoContainer = videoEl.parentElement;
 const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
 let lastTap = 0;
@@ -187,7 +186,7 @@ const handleTouchEnd = () => {
 };
 
 // --- Double Tap Gesture ---
-const videoContainer = videoRef.current.parentElement;
+
     videoContainer.addEventListener("touchend", (event) => {
       const currentTime = Date.now();
       const tapGap = currentTime - lastTap.current;
