@@ -157,7 +157,37 @@ const VideoPlayer = () => {
       });
     });
 
-    const videoContainer = videoRef.current.parentElement;
+    
+      const videoEl = videoRef.current;
+const videoContainer = videoEl.parentElement;
+const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+let lastTap = 0;
+let holdTimeout = null;
+let speedHeld = false;
+
+// --- Hold to Speed Up ---
+const handleTouchStart = () => {
+  if (!isMobile) return;
+  holdTimeout = setTimeout(() => {
+    if (playerRef.current && !speedHeld) {
+      speedHeld = true;
+      playerRef.current.playbackRate(2);
+    }
+  }, 1000); // Start speeding up after 1 second hold
+};
+
+const handleTouchEnd = () => {
+  if (!isMobile) return;
+  clearTimeout(holdTimeout);
+  if (playerRef.current && speedHeld) {
+    playerRef.current.playbackRate(1);
+    speedHeld = false;
+  }
+};
+
+// --- Double Tap Gesture ---
+const videoContainer = videoRef.current.parentElement;
     videoContainer.addEventListener("touchend", (event) => {
       const currentTime = Date.now();
       const tapGap = currentTime - lastTap.current;
@@ -167,64 +197,37 @@ const VideoPlayer = () => {
       const rect = videoContainer.getBoundingClientRect();
       const tapX = touch.clientX - rect.left;
       const videoWidth = rect.width;
+  
 
-  const videoEl = videoRef.current;
-  let holdTimeout = null;
-  let speedHeld = false;
+  if (tapGap < 300) {
+    const touch = event.changedTouches[0];
+    const rect = videoContainer.getBoundingClientRect();
+    const tapX = touch.clientX - rect.left;
+    const width = rect.width;
 
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-  const handleTouchStart = () => {
-    if (!isMobile) return;
-
-    holdTimeout = setTimeout(() => {
-      if (playerRef.current && !speedHeld) {
-        speedHeld = true;
-        playerRef.current.playbackRate(2); // speed up
-      }
-    }, 1000); // start speeding after 400ms hold
-  };
-
-  const handleTouchEnd = () => {
-    if (!isMobile) return;
-
-    clearTimeout(holdTimeout);
-    holdTimeout = null;
-
-    if (playerRef.current && speedHeld) {
-      speedHeld = false;
-      playerRef.current.playbackRate(1); // back to normal
+    if (tapX < width / 3) {
+      playerRef.current.currentTime(playerRef.current.currentTime() - 10);
+    } else if (tapX > (2 * width) / 3) {
+      playerRef.current.currentTime(playerRef.current.currentTime() + 10);
+    } else {
+      playerRef.current.paused()
+        ? playerRef.current.play()
+        : playerRef.current.pause();
     }
-  };
+  }
+});
 
-  videoEl.addEventListener("touchstart", handleTouchStart);
-  videoEl.addEventListener("touchend", handleTouchEnd);
+// Add listeners
+videoEl.addEventListener("touchstart", handleTouchStart);
+videoEl.addEventListener("touchend", handleTouchEnd);
+videoContainer.addEventListener("touchend", handleDoubleTap);
 
-  return () => {
-    videoEl.removeEventListener("touchstart", handleTouchStart);
-    videoEl.removeEventListener("touchend", handleTouchEnd);
-  };
-
-      if (tapGap < 300) {
-        if (tapX < videoWidth / 3) {
-          playerRef.current.currentTime(playerRef.current.currentTime() - 10);
-        } else if (tapX > (2 * videoWidth) / 3) {
-          playerRef.current.currentTime(playerRef.current.currentTime() + 10);
-        } else {
-          playerRef.current.paused()
-            ? playerRef.current.play()
-            : playerRef.current.pause();
-        }
-      }
-    });
-
-    return () => {
-      if (playerRef.current) {
-        playerRef.current.dispose();
-      }
-      clearInterval(studyTimer);
-    };
-  }, [m3u8Url, isLive]);
+// Cleanup
+cleanupFns.push(() => {
+  videoEl.removeEventListener("touchstart", handleTouchStart);
+  videoEl.removeEventListener("touchend", handleTouchEnd);
+  videoContainer.removeEventListener("touchend", handleDoubleTap);
+});
 
   const formatTime = (timeInSeconds) => {
     if (isNaN(timeInSeconds) || timeInSeconds < 0) return "00:00";
