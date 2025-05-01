@@ -84,10 +84,7 @@ const VideoPlayer = () => {
       },
     },
   },
-      playerRef.current.responsiveControls(),
-    playerRef.current.ready(function () {
-  this.responsiveControls(),
-}),
+      
   function () {
     this.mobileUi({
       touchControls: {
@@ -98,6 +95,10 @@ const VideoPlayer = () => {
     });
   }
 );
+  playerRef.current.responsiveControls(),
+    playerRef.current.ready(function () {
+  this.responsiveControls();
+});
 
 // Add this block *after* setting the source
 playerRef.current.ready(() => {
