@@ -55,35 +55,47 @@ const VideoPlayer = () => {
     }
 
     playerRef.current = videojs(
-      videoRef.current,
-      {
-        controls: true,
-        autoplay: false,
-        fluid: true,
-        preload: "auto",
-        playbackRates: [0.5, 1, 1.25, 1.5, 1.75, 2],
-        html5: {
-          vhs: {
-            overrideNative: true,
-            enableLowInitialPlaylist: true,
-          },
+  videoRef.current,
+  {
+    controls: true,
+    autoplay: false,
+    fluid: true,
+    preload: "auto",
+    playbackRates: [0.5, 1, 1.25, 1.5, 1.75, 2],
+    html5: {
+      vhs: {
+        overrideNative: true,
+        enableLowInitialPlaylist: true,
+      },
+    },
+  },
+  function () {
+    this.mobileUi({
+      touchControls: {
+        tap: {
+          togglePlay: true,
         },
       },
-      function () {
-        this.seekButtons({
-          forward: 10,
-          back: 10,
-        });
+    });
+  }
+);
 
-        this.mobileUi({
-          touchControls: {
-            tap: {
-              togglePlay: true,
-            },
-          },
-        });
-      }
-    );
+// Add this block *after* setting the source
+playerRef.current.ready(() => {
+  playerRef.current.qualityLevels();
+  playerRef.current.hlsQualitySelector({
+    displayCurrentQuality: true,
+  });
+
+  // Add this: Enable Seek Buttons
+  playerRef.current.seekButtons({
+    forward: 10,
+    back: 10,
+  });
+
+  // Optional: log to confirm
+  console.log("Seek buttons added");
+});
 
     playerRef.current.src({
       src: videoSource,
