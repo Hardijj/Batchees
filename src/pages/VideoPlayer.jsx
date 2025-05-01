@@ -5,6 +5,7 @@ import "videojs-contrib-quality-levels";
 import "videojs-hls-quality-selector";
 import "videojs-mobile-ui";
 import "videojs-seek-buttons";
+import "videojs-responsive-controls"; // Import videojs responsive controls
 import "videojs-mobile-ui/dist/videojs-mobile-ui.css";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -44,7 +45,7 @@ const VideoPlayer = () => {
     const stored = parseFloat(localStorage.getItem(`studyTime_${today}`)) || 0;
     setStudiedMinutes(Math.floor(stored / 60));
   }, []);
-
+  
   useEffect(() => {
     if (!videoRef.current) return;
 
@@ -54,48 +55,32 @@ const VideoPlayer = () => {
       playerRef.current.dispose();
     }
 
-    playerRef.current = videojs(
-  videoRef.current,
-  {
-    controls: true,
-    autoplay: false,
-    fluid: true,
-    preload: "auto",
-    playbackRates: [0.5, 1, 1.25, 1.5, 1.75, 2],
-    html5: {
-      vhs: {
-        overrideNative: true,
-        enableLowInitialPlaylist: true,
-      },
-    },
-  },
-  function () {
-    this.mobileUi({
-      touchControls: {
-        tap: {
-          togglePlay: true,
+    playerRef.current = videojs(videoRef.current, {
+      controls: true,
+      autoplay: false,
+      fluid: true,
+      preload: "auto",
+      playbackRates: [0.5, 1, 1.25, 1.5, 1.75, 2],
+      html5: {
+        vhs: {
+          overrideNative: true,
+          enableLowInitialPlaylist: true,
         },
       },
+    }, function () {
+      this.seekButtons({
+        forward: 10,
+        back: 10,
+      });
+
+      this.mobileUi({
+        touchControls: {
+          tap: {
+            togglePlay: true,
+          },
+        },
+      });
     });
-  }
-);
-
-// Add this block *after* setting the source
-playerRef.current.ready(() => {
-  playerRef.current.qualityLevels();
-  playerRef.current.hlsQualitySelector({
-    displayCurrentQuality: true,
-  });
-
-  // Add this: Enable Seek Buttons
-  playerRef.current.seekButtons({
-    forward: 10,
-    back: 10,
-  });
-
-  // Optional: log to confirm
-  console.log("Seek buttons added");
-});
 
     playerRef.current.src({
       src: videoSource,
@@ -177,9 +162,11 @@ playerRef.current.ready(() => {
     const videoEl = videoRef.current;
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
+    let lastTap = 0;
     let holdTimeout = null;
     let speedHeld = false;
 
+    // --- Hold to Speed Up ---
     const handleTouchStart = () => {
       if (!isMobile) return;
       holdTimeout = setTimeout(() => {
@@ -187,7 +174,7 @@ playerRef.current.ready(() => {
           speedHeld = true;
           playerRef.current.playbackRate(2);
         }
-      }, 1000);
+      }, 1000); // Start speeding up after 1 second hold
     };
 
     const handleTouchEnd = () => {
@@ -199,7 +186,8 @@ playerRef.current.ready(() => {
       }
     };
 
-    const handleDoubleTap = (event) => {
+    // --- Double Tap Gesture ---
+    videoContainer.addEventListener("touchend", (event) => {
       const currentTime = Date.now();
       const tapGap = currentTime - lastTap.current;
       lastTap.current = currentTime;
@@ -207,12 +195,12 @@ playerRef.current.ready(() => {
       const touch = event.changedTouches[0];
       const rect = videoContainer.getBoundingClientRect();
       const tapX = touch.clientX - rect.left;
-      const width = rect.width;
+      const videoWidth = rect.width;
 
       if (tapGap < 300) {
-        if (tapX < width / 3) {
+        if (tapX < videoWidth / 3) {
           playerRef.current.currentTime(playerRef.current.currentTime() - 10);
-        } else if (tapX > (2 * width) / 3) {
+        } else if (tapX > (2 * videoWidth) / 3) {
           playerRef.current.currentTime(playerRef.current.currentTime() + 10);
         } else {
           playerRef.current.paused()
@@ -220,18 +208,19 @@ playerRef.current.ready(() => {
             : playerRef.current.pause();
         }
       }
-    };
+    });
 
+    // Add listeners
     videoEl.addEventListener("touchstart", handleTouchStart);
     videoEl.addEventListener("touchend", handleTouchEnd);
-    videoContainer.addEventListener("touchend", handleDoubleTap);
 
+    // Cleanup
     return () => {
       videoEl.removeEventListener("touchstart", handleTouchStart);
       videoEl.removeEventListener("touchend", handleTouchEnd);
-      videoContainer.removeEventListener("touchend", handleDoubleTap);
     };
-  }, [m3u8Url, isLive]);
+
+  }, [isLive, m3u8Url]);
 
   const formatTime = (timeInSeconds) => {
     if (isNaN(timeInSeconds) || timeInSeconds < 0) return "00:00";
@@ -243,12 +232,11 @@ playerRef.current.ready(() => {
   };
 
   const handleGoToDownloadClick = () => {
-    const fileName = `${chaptersName} ${lecturesName}`;
+    const fileName = `${chaptersName} ${lecturesName}`; // You can customize filename if you want
     const downloadUrl = m3u8Url;
-    const intentUrl = `intent:${downloadUrl}#Intent;action=android.intent.action.VIEW;package=idm.internet.download.manager;scheme=1dmdownload;S.title=${encodeURIComponent(
-      fileName
-    )};end`;
+    const intentUrl = `intent:${downloadUrl}#Intent;action=android.intent.action.VIEW;package=idm.internet.download.manager;scheme=1dmdownload;S.title=${encodeURIComponent(fileName)};end`;
 
+    // Redirect to open in 1DM
     window.location.href = intentUrl;
   };
 
@@ -261,50 +249,30 @@ playerRef.current.ready(() => {
       </h2>
 
       <div style={{ position: "relative" }}>
-        <video ref={videoRef} className="video-js vjs-default-skin" />
+        <video ref={videoRef} className="video-js vjs-fluid vjs-default-skin" controls>
+          <source src={m3u8Url} type="application/x-mpegURL" />
+        </video>
       </div>
 
-      {!isLive && (
-        <div style={{ textAlign: "center", marginTop: "20px" }}>
-          <button
-            onClick={handleGoToDownloadClick}
-            style={{
-              backgroundColor: "#28a745",
-              color: "#fff",
-              padding: "10px 20px",
-              border: "none",
-              borderRadius: "5px",
-              fontSize: "16px",
-              cursor: "pointer",
-              boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-            }}
-          >
-            Download Lecture
-          </button>
+      {showPopup && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <p>Click here to start your download!</p>
+            <button onClick={handleGoToDownloadClick}>Go to Download</button>
+          </div>
         </div>
       )}
 
-      {showPopup && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: "20px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            backgroundColor: "#fff",
-            padding: "20px",
-            borderRadius: "10px",
-            boxShadow: "0 5px 15px rgba(0,0,0,0.3)",
-            zIndex: 1000,
-            textAlign: "center",
-            maxWidth: "90%",
-          }}
-        >
-          <p style={{ marginBottom: "15px", color: "#333" }}>
-            Link copied to clipboard. Go to Telegram group, paste the link...
-          </p>
-        </div>
-      )}
+      <div className="notes-section">
+        <h3>Notes</h3>
+        <a href={notesUrl} target="_blank" rel="noopener noreferrer">
+          Click to open notes
+        </a>
+      </div>
+
+      <div className="study-time">
+        <p>Total study time today: {studiedMinutes} minutes</p>
+      </div>
     </div>
   );
 };
