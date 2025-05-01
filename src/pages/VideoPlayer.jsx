@@ -5,7 +5,7 @@ import "videojs-contrib-quality-levels";
 import "videojs-hls-quality-selector";
 import "videojs-mobile-ui";
 import "videojs-seek-buttons";
-import 'videojs-responsive-controls';
+import "videojs-responsive-controls";
 import "videojs-mobile-ui/dist/videojs-mobile-ui.css";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -23,7 +23,7 @@ const VideoPlayer = () => {
   const { chapterName, lectureName, m3u8Url, notesUrl } = location.state || {};
   const isLive = location.pathname.includes("/video/live");
   const defaultLiveUrl = "m3u8_link_here";
-  const telegramDownloaderLink = "https://t.me/your_downloader_group"; // Replace with actual link
+  const telegramDownloaderLink = "https://t.me/your_downloader_group";
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
@@ -56,70 +56,65 @@ const VideoPlayer = () => {
     }
 
     playerRef.current = videojs(
-  videoRef.current,
-  {
-    controls: true,
-    autoplay: false,
-    fluid: true,
-    preload: "auto",
-    controlBar: {
-      children: [
-      'playToggle',
-      'volumePanel',
-      'CurrentTimeDisplay',
-      'TimeDivider',
-      'DurationDisplay',
-      'progressControl',
-      'playbackRateMenuButton',
-      'qualitySelector',
-      'pictureInPictureToggle',
-      'fullscreenToggle'
-      ]
-    },
-    playbackRates: [0.5, 1, 1.25, 1.5, 1.75, 2],
-    html5: {
-      vhs: {
-        overrideNative: true,
-        enableLowInitialPlaylist: true,
-      },
-    },
-  },
-      
-  function () {
-    this.mobileUi({
-      touchControls: {
-        tap: {
-          togglePlay: true,
+      videoRef.current,
+      {
+        controls: true,
+        autoplay: false,
+        fluid: true,
+        preload: "auto",
+        controlBar: {
+          children: [
+            'playToggle',
+            'volumePanel',
+            'CurrentTimeDisplay',
+            'TimeDivider',
+            'DurationDisplay',
+            'progressControl',
+            'playbackRateMenuButton',
+            'qualitySelector',
+            'pictureInPictureToggle',
+            'fullscreenToggle'
+          ]
+        },
+        playbackRates: [0.5, 1, 1.25, 1.5, 1.75, 2],
+        html5: {
+          vhs: {
+            overrideNative: true,
+            enableLowInitialPlaylist: true,
+          },
         },
       },
-    });
-  }
-);
-  playerRef.current.responsiveControls(),
+      function () {
+        this.mobileUi({
+          touchControls: {
+            tap: {
+              togglePlay: true,
+            },
+          },
+        });
+      }
+    );
+
+    // Responsive Controls Init (CORRECTED)
     playerRef.current.ready(function () {
-  this.responsiveControls();
-});
-
-// Add this block *after* setting the source
-playerRef.current.ready(() => {
-  playerRef.current.qualityLevels();
-  playerRef.current.hlsQualitySelector({
-    displayCurrentQuality: true,
-  });
-
-  // Add this: Enable Seek Buttons
-  playerRef.current.seekButtons({
-    forward: 10,
-    back: 10,
-  });
-
-  // Optional: log to confirm
-  console.log("Seek buttons added");
-});
+      this.responsiveControls(); // Initialize after ready
+    });
 
     playerRef.current.src({
       src: videoSource,
       type: "application/x-mpegURL",
+    });
+
+    playerRef.current.ready(() => {
+      playerRef.current.qualityLevels();
+      playerRef.current.hlsQualitySelector({
+        displayCurrentQuality: true,
+      });
+
+      playerRef.current.seekButtons({
+        forward: 10,
+        back: 10,
+      });
     });
 
     let sessionStart = null;
@@ -301,28 +296,6 @@ playerRef.current.ready(() => {
           >
             Download Lecture
           </button>
-        </div>
-      )}
-
-      {showPopup && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: "20px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            backgroundColor: "#fff",
-            padding: "20px",
-            borderRadius: "10px",
-            boxShadow: "0 5px 15px rgba(0,0,0,0.3)",
-            zIndex: 1000,
-            textAlign: "center",
-            maxWidth: "90%",
-          }}
-        >
-          <p style={{ marginBottom: "15px", color: "#333" }}>
-            Link copied to clipboard. Go to Telegram group, paste the link...
-          </p>
         </div>
       )}
     </div>
