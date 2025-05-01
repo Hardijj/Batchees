@@ -84,10 +84,10 @@ const VideoPlayer = () => {
       },
     },
   },
-      playerRef.current.responsiveControls();
+      playerRef.current.responsiveControls(),
     playerRef.current.ready(function () {
-  this.responsiveControls();
-});
+  this.responsiveControls(),
+}),
   function () {
     this.mobileUi({
       touchControls: {
