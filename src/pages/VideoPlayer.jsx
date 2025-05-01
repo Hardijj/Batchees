@@ -61,6 +61,20 @@ const VideoPlayer = () => {
     autoplay: false,
     fluid: true,
     preload: "auto",
+    controlBar: {
+      children: [
+      'playToggle',
+      'volumePanel',
+      'currentTimeDisplay',
+      'timeDivider',
+      'durationDisplay',
+      'progressControl',
+      'playbackRateMenuButton',
+      'qualitySelector',
+      'pictureInPictureToggle',
+      'fullscreenToggle'
+      ]
+    },
     playbackRates: [0.5, 1, 1.25, 1.5, 1.75, 2],
     html5: {
       vhs: {
