@@ -65,9 +65,9 @@ const VideoPlayer = () => {
       children: [
       'playToggle',
       'volumePanel',
-      'currentTimeDisplay',
-      'timeDivider',
-      'durationDisplay',
+      'CurrentTimeDisplay',
+      'TimeDivider',
+      'DurationDisplay',
       'progressControl',
       'playbackRateMenuButton',
       'qualitySelector',
