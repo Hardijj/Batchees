@@ -5,6 +5,7 @@ import "videojs-contrib-quality-levels";
 import "videojs-hls-quality-selector";
 import "videojs-mobile-ui";
 import "videojs-seek-buttons";
+import 'videojs-responsive-controls';
 import "videojs-mobile-ui/dist/videojs-mobile-ui.css";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -83,6 +84,10 @@ const VideoPlayer = () => {
       },
     },
   },
+      playerRef.current.responsiveControls();
+    playerRef.current.ready(function () {
+  this.responsiveControls();
+});
   function () {
     this.mobileUi({
       touchControls: {
