@@ -97,7 +97,7 @@ const VideoPlayer = () => {
 
     // Responsive Controls Init (CORRECTED)
     playerRef.current.ready(function () {
-      this.responsiveControls(); // Initialize after ready
+      player.responsiveControls(); // Initialize after ready
     });
 
     playerRef.current.src({
