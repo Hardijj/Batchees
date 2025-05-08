@@ -13,6 +13,7 @@ import ChapterLectures10 from "./pages/ChapterLectures10";
 import ChapterLectures11 from "./pages/ChapterLectures11";
 import VideoPlayer from "./pages/VideoPlayer";
 import ProtectedRoute from "./components/ProtectedRoute";
+import VideoPlayer2 from "./pages/VideoPlayer2"; // Adjust path as needed
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
         <Route path="/video/9/:subject/:chapterIndex" element={<ProtectedRoute><VideoPlayer /></ProtectedRoute>} />
         <Route path="/video/10/:subject/:chapterIndex" element={<ProtectedRoute><VideoPlayer /></ProtectedRoute>} />
         <Route path="/video/11/:subject/:chapterIndex" element={<ProtectedRoute><VideoPlayer /></ProtectedRoute>} />
+        <Route path="/video2/10/:subject/:chapterIndex" element={<VideoPlayer2 />} />
 
         {/* Video Player - Live */}
      <Route path="/video/9/live" element={<ProtectedRoute><VideoPlayer /></ProtectedRoute>} />
