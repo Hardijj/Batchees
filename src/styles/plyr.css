@@ -1,340 +1,77 @@
-@keyframes plyr-progress {
-  to {
-    background-position: 25px 0;
-    background-position: var(--plyr-progress-loading-size, 25px) 0;
-  }
-}
-
-@keyframes plyr-popup {
-  0% {
-    opacity: 0.5;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes plyr-fade-in {
-  0% {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.plyr {
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
-  align-items: center;
-  direction: ltr;
-  display: flex;
-  flex-direction: column;
-  font-family: var(--plyr-font-family, inherit);
-  font-variant-numeric: tabular-nums;
-  font-weight: var(--plyr-font-weight-regular, 400);
-  line-height: var(--plyr-line-height, 1.7);
-  max-width: 100%;
-  min-width: 200px;
-  position: relative;
-  text-shadow: none;
-  transition: box-shadow 0.3s ease;
-  z-index: 0;
-}
-
-.plyr audio,
-.plyr iframe,
-.plyr video {
-  display: block;
-  height: 100%;
-  width: 100%;
-}
-
-.plyr button {
-  font: inherit;
-  line-height: inherit;
-  width: auto;
-}
-
-.plyr:focus {
-  outline: 0;
-}
-
-.plyr--full-ui {
-  box-sizing: border-box;
-}
-
-.plyr--full-ui *,
-.plyr--full-ui :after,
-.plyr--full-ui :before {
-  box-sizing: inherit;
-}
-
-.plyr--full-ui a,
-.plyr--full-ui button,
-.plyr--full-ui input,
-.plyr--full-ui label {
-  touch-action: manipulation;
-}
-
-.plyr__badge {
-  background: var(--plyr-badge-background, #4a5464);
-  border-radius: var(--plyr-badge-border-radius, 2px);
-  color: var(--plyr-badge-text-color, #fff);
-  font-size: var(--plyr-font-size-badge, 9px);
-  line-height: 1;
-  padding: 3px 4px;
-}
-
-.plyr--full-ui ::-webkit-media-text-track-container {
-  display: none;
-}
-
-.plyr__captions {
-  animation: plyr-fade-in 0.3s ease;
-  bottom: 0;
-  display: none;
-  font-size: var(--plyr-font-size-small, 13px);
-  left: 0;
-  padding: var(--plyr-control-spacing, 10px);
-  position: absolute;
-  text-align: center;
-  transition: transform 0.4s ease-in-out;
-  width: 100%;
-}
-
-.plyr__captions span:empty {
-  display: none;
-}
-
-@media (min-width: 480px) {
-  .plyr__captions {
-    font-size: var(--plyr-font-size-base, 15px);
-    padding: calc(var(--plyr-control-spacing, 10px) * 2);
-  }
-}
-
-@media (min-width: 768px) {
-  .plyr__captions {
-    font-size: var(--plyr-font-size-large, 18px);
-  }
-}
-
-.plyr--captions-active .plyr__captions {
-  display: block;
-}
-
-.plyr:not(.plyr--hide-controls) .plyr__controls:not(:empty) ~ .plyr__captions {
-  transform: translateY(calc(var(--plyr-control-spacing, 10px) * -4));
-}
-
-.plyr__caption {
-  background: var(--plyr-captions-background, rgba(0, 0, 0, 0.8));
-  border-radius: 2px;
-  box-decoration-break: clone;
-  color: var(--plyr-captions-text-color, #fff);
-  line-height: 185%;
-  padding: 0.2em 0.5em;
-  white-space: pre-wrap;
-}
-
-.plyr__caption div {
-  display: inline;
-}
-
-/* Add more rules here as needed or based on your original snippet */
-.plyr__control {
-  background: transparent;
-  border: 0;
-  border-radius: var(--plyr-control-radius, 3px);
-  color: var(--plyr-control-color, #fff);
-  cursor: pointer;
-  flex-shrink: 0;
-  overflow: visible;
-  padding: var(--plyr-control-padding, 5px);
-  position: relative;
-  transition: background 0.3s ease, color 0.3s ease, opacity 0.3s ease;
-}
-
-.plyr__control svg {
-  display: block;
-  fill: currentColor;
-  height: var(--plyr-control-icon-size, 18px);
-  pointer-events: none;
-  width: var(--plyr-control-icon-size, 18px);
-}
-
-.plyr__control:focus {
-  outline: 0;
-}
-
-.plyr__control:hover,
-.plyr__control[aria-expanded='true'] {
-  background: var(--plyr-control-hover-background, rgba(255, 255, 255, 0.1));
-  color: var(--plyr-control-hover-color, #fff);
-}
-
-.plyr--video .plyr__controls {
-  align-items: center;
-  background: var(--plyr-controls-background, rgba(0, 0, 0, 0.5));
-  border-radius: var(--plyr-controls-radius, 0);
-  color: var(--plyr-control-color, #fff);
-  display: flex;
-  flex-wrap: wrap;
-  font-size: var(--plyr-font-size-base, 15px);
-  justify-content: space-between;
-  line-height: 1;
-  padding: var(--plyr-control-spacing, 10px);
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 3;
-  opacity: 1;
-  transition: opacity 0.3s ease;
-}
-
-.plyr__progress {
-  background: var(--plyr-progress-background, rgba(255, 255, 255, 0.3));
-  border-radius: 100px;
-  cursor: pointer;
-  flex: 1;
-  height: var(--plyr-range-track-height, 5px);
-  margin: 0 10px;
+/* Base Player Styling */
+.video-js {
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: #000;
+  border-radius: 8px;
   overflow: hidden;
-  position: relative;
-  touch-action: pan-x;
 }
 
-.plyr__progress input[type='range'] {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  opacity: 0;
-  cursor: pointer;
+/* Control Bar */
+.vjs-control-bar {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  border-radius: 0 0 8px 8px;
+  transition: all 0.3s ease;
 }
 
-.plyr__progress--played,
-.plyr__progress--buffer {
-  background: var(--plyr-color-main, #00b3ff);
-  border-radius: 100px;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-.plyr__progress--buffer {
-  background: var(--plyr-progress-buffered-background, rgba(255, 255, 255, 0.3));
-}
-
-.plyr__progress--played {
-  background: var(--plyr-color-main, #00b3ff);
-}
-
-.plyr__tooltip {
-  background: var(--plyr-tooltip-background, rgba(255, 255, 255, 0.9));
-  border-radius: var(--plyr-tooltip-radius, 3px);
-  bottom: 100%;
-  color: var(--plyr-tooltip-color, #000);
-  font-size: var(--plyr-font-size-small, 13px);
-  font-weight: var(--plyr-font-weight-regular, 400);
+/* Big Play Button */
+.vjs-big-play-button {
+  top: 50%;
   left: 50%;
-  line-height: 1.3;
-  opacity: 0;
-  padding: 5px 7.5px;
-  pointer-events: none;
-  position: absolute;
-  transform: translate(-50%, 10px) scale(0.95);
-  transform-origin: 50% 100%;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  white-space: nowrap;
-  z-index: 2;
+  margin-left: -1.5em;
+  margin-top: -1.5em;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: 100%;
+  font-size: 1.5em;
+  width: 3em;
+  height: 3em;
 }
 
-.plyr__control:hover .plyr__tooltip,
-.plyr__control:focus .plyr__tooltip {
-  opacity: 1;
-  transform: translate(-50%, 0) scale(1);
+/* Progress Bar */
+.vjs-progress-holder {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  height: 8px;
 }
 
-.plyr--is-touch .plyr__tooltip {
+.vjs-play-progress,
+.vjs-volume-level {
+  background-color: #00b3ff;
+}
+
+/* Volume Bar */
+.vjs-volume-panel .vjs-volume-control {
+  background: transparent;
+}
+
+/* Hover & Focus */
+.vjs-control:focus,
+.vjs-control:hover {
+  color: #00b3ff;
+  text-shadow: none;
+}
+
+/* Fullscreen Button */
+.vjs-fullscreen-control .vjs-icon-placeholder:before {
+  content: "\f065"; /* FontAwesome icon (optional) */
+}
+
+/* Time display */
+.vjs-current-time,
+.vjs-duration,
+.vjs-remaining-time {
+  font-size: 0.9em;
+  color: #fff;
+}
+
+/* Customizations for better look */
+.vjs-button > .vjs-icon-placeholder:before {
+  font-size: 1.2em;
+}
+
+/* Hide download & picture-in-picture buttons */
+.vjs-download-button, {
   display: none !important;
 }
-
-.plyr__menu {
-  position: relative;
-}
-
-.plyr__menu__container {
-  background: var(--plyr-menu-background, rgba(255, 255, 255, 0.9));
-  border-radius: var(--plyr-menu-radius, 4px);
-  box-shadow: var(--plyr-menu-shadow, 0 1px 10px rgba(0, 0, 0, 0.1));
-  color: var(--plyr-menu-color, #000);
-  display: none;
-  font-size: var(--plyr-font-size-small, 13px);
-  padding: 5px 0;
-  position: absolute;
-  right: 0;
-  top: 100%;
-  white-space: nowrap;
-  z-index: 3;
-}
-
-.plyr__menu__container--show {
-  display: block;
-}
-
-.plyr__menu__item {
-  background: none;
-  border: 0;
-  color: inherit;
-  cursor: pointer;
-  display: block;
-  font: inherit;
-  line-height: 1.5;
-  padding: 7.5px 20px;
-  text-align: left;
-  width: 100%;
-}
-
-.plyr__menu__item:hover,
-.plyr__menu__item[aria-checked='true'] {
-  background: var(--plyr-menu-hover-background, rgba(0, 0, 0, 0.05));
-  color: var(--plyr-menu-hover-color, inherit);
-}
-
-.plyr__menu__item[aria-checked='true']::before {
-  content: "✓";
-  margin-right: 10px;
-}
-
-.plyr__volume {
-  display: flex;
-  align-items: center;
-}
-
-.plyr__volume input[type='range'] {
-  width: 70px;
-  margin-left: 10px;
-}
-
-.plyr--muted .plyr__volume input[type='range'] {
-  display: none;
-}
-
-.plyr__fullscreen {
-  margin-left: auto;
-}
-
-.plyr--fullscreen .plyr__controls {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 9999;
-              }
