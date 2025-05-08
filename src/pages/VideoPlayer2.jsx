@@ -24,7 +24,7 @@ const VideoPlayer2 = () => {
     if (!isLoggedIn) {
       navigate("/login");
     }
-  }, [navigate]);
+  }, [navigate, m3u8Url]);
 
   useEffect(() => {
     const today = new Date().toLocaleDateString();
