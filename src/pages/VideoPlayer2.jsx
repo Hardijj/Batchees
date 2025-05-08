@@ -1,20 +1,22 @@
 import React, { useEffect, useRef, useState } from "react";
 import Plyr from "plyr";
 import "plyr/dist/plyr.css";
-import Hls from "hls.js";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const VideoPlayer2 = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const videoRef = useRef(null);
   const playerRef = useRef(null);
   const lastTap = useRef(0);
-  const location = useLocation();
-  const navigate = useNavigate();
   const [studiedMinutes, setStudiedMinutes] = useState(0);
-
-  const { chapterName, lectureName, m3u8Url, notesUrl } = location.state || {};
   const chaptersName = localStorage.getItem("chapterName");
   const lecturesName = localStorage.getItem("lectureName");
+
+  const { m3u8Url, chapterName, lectureName, notesUrl } = location.state || {};
+  const isLive = location.pathname.includes("/video/live");
+  const defaultLiveUrl = "m3u8_link_here";
+  const telegramDownloaderLink = "https://t.me/your_downloader_group";
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
@@ -36,118 +38,162 @@ const VideoPlayer2 = () => {
   }, []);
 
   useEffect(() => {
+    const videoSource = isLive ? defaultLiveUrl : m3u8Url || defaultLiveUrl;
     if (!videoRef.current) return;
 
-    const video = videoRef.current;
-
-    if (Hls.isSupported()) {
-      const hls = new Hls();
-      hls.loadSource(m3u8Url);
-      hls.attachMedia(video);
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        playerRef.current = new Plyr(video, {
-          controls: [
-            "play",
-            "progress",
-            "current-time",
-            "mute",
-            "volume",
-            "captions",
-            "settings",
-            "fullscreen",
-          ],
-          settings: ["quality", "speed"],
-          speed: { selected: 1, options: [0.5, 1, 1.25, 1.5, 2] },
-        });
-      });
-    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-      video.src = m3u8Url;
+    if (playerRef.current) {
+      playerRef.current.destroy();
     }
 
-    let sessionStart = Date.now();
-    let studyTimer = setInterval(() => {
-      const elapsed = (Date.now() - sessionStart) / 1000;
+    playerRef.current = new Plyr(videoRef.current, {
+      controls: [
+        'play', 'progress', 'current-time', 'duration', 'mute',
+        'volume', 'captions', 'settings', 'fullscreen'
+      ],
+      settings: ['quality', 'speed'],
+      speed: { selected: 1, options: [0.5, 1, 1.25, 1.5, 2] },
+    });
+
+    playerRef.current.source = {
+      type: 'video',
+      sources: [
+        {
+          src: videoSource,
+          type: 'application/x-mpegURL',
+        },
+      ],
+    };
+
+    let sessionStart = null;
+    let studyTimer = null;
+
+    const updateStudyTime = () => {
+      const now = Date.now();
+      const elapsed = sessionStart ? (now - sessionStart) / 1000 : 0;
+      sessionStart = now;
       const today = new Date().toLocaleDateString();
       const key = `studyTime_${today}`;
-      const prev = parseFloat(localStorage.getItem(key)) || 0;
-      const total = prev + elapsed;
-      localStorage.setItem(key, total.toString());
-      setStudiedMinutes(Math.floor(total / 60));
-      sessionStart = Date.now();
-    }, 10000);
+      const existing = parseFloat(localStorage.getItem(key)) || 0;
+      const newTotal = existing + elapsed;
+      localStorage.setItem(key, newTotal.toString());
+      setStudiedMinutes(Math.floor(newTotal / 60));
+    };
 
-    const handleTouchStart = (e) => {
-      if (!/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) return;
-      e.target.holdTimeout = setTimeout(() => {
-        if (playerRef.current) playerRef.current.speed = 2;
+    playerRef.current.on('play', () => {
+      sessionStart = Date.now();
+      clearInterval(studyTimer);
+      studyTimer = setInterval(updateStudyTime, 10000);
+    });
+
+    playerRef.current.on('pause', () => {
+      updateStudyTime();
+      clearInterval(studyTimer);
+    });
+
+    playerRef.current.on('ended', () => {
+      updateStudyTime();
+      clearInterval(studyTimer);
+    });
+
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const videoEl = videoRef.current;
+    const videoContainer = videoEl?.parentElement;
+
+    let holdTimeout = null;
+    let speedHeld = false;
+
+    const handleTouchStart = () => {
+      if (!isMobile) return;
+      holdTimeout = setTimeout(() => {
+        if (!speedHeld) {
+          speedHeld = true;
+          playerRef.current.speed = 2;
+        }
       }, 1000);
     };
 
-    const handleTouchEnd = (e) => {
-      clearTimeout(e.target.holdTimeout);
-      if (playerRef.current) playerRef.current.speed = 1;
+    const handleTouchEnd = () => {
+      if (!isMobile) return;
+      clearTimeout(holdTimeout);
+      if (speedHeld) {
+        playerRef.current.speed = 1;
+        speedHeld = false;
+      }
     };
 
-    const handleDoubleTap = (e) => {
-      const now = Date.now();
-      const tapGap = now - lastTap.current;
-      lastTap.current = now;
+    const handleDoubleTap = (event) => {
+      const currentTime = Date.now();
+      const tapGap = currentTime - lastTap.current;
+      lastTap.current = currentTime;
 
-      const rect = video.getBoundingClientRect();
-      const x = e.changedTouches[0].clientX - rect.left;
+      const touch = event.changedTouches[0];
+      const rect = videoContainer.getBoundingClientRect();
+      const tapX = touch.clientX - rect.left;
       const width = rect.width;
 
       if (tapGap < 300) {
-        if (x < width / 3) {
-          video.currentTime -= 10;
-        } else if (x > (2 * width) / 3) {
-          video.currentTime += 10;
+        const current = playerRef.current.currentTime;
+        if (tapX < width / 3) {
+          playerRef.current.currentTime = current - 10;
+        } else if (tapX > (2 * width) / 3) {
+          playerRef.current.currentTime = current + 10;
         } else {
-          video.paused ? video.play() : video.pause();
+          playerRef.current.togglePlay();
         }
       }
     };
 
-    video.addEventListener("touchstart", handleTouchStart);
-    video.addEventListener("touchend", handleTouchEnd);
-    video.addEventListener("touchend", handleDoubleTap);
+    videoEl.addEventListener("touchstart", handleTouchStart);
+    videoEl.addEventListener("touchend", handleTouchEnd);
+    videoContainer.addEventListener("touchend", handleDoubleTap);
 
     return () => {
-      if (playerRef.current?.destroy) playerRef.current.destroy();
-      clearInterval(studyTimer);
+      videoEl.removeEventListener("touchstart", handleTouchStart);
+      videoEl.removeEventListener("touchend", handleTouchEnd);
+      videoContainer.removeEventListener("touchend", handleDoubleTap);
+      if (playerRef.current) playerRef.current.destroy();
     };
-  }, [m3u8Url]);
+  }, [m3u8Url, isLive]);
 
-  const handleDownloadClick = () => {
+  const handleGoToDownloadClick = () => {
     const fileName = `${chaptersName} ${lecturesName}`;
-    const intentUrl = `intent:${m3u8Url}#Intent;action=android.intent.action.VIEW;package=idm.internet.download.manager;scheme=1dmdownload;S.title=${encodeURIComponent(fileName)};end`;
+    const downloadUrl = m3u8Url;
+    const intentUrl = `intent:${downloadUrl}#Intent;action=android.intent.action.VIEW;package=idm.internet.download.manager;scheme=1dmdownload;S.title=${encodeURIComponent(fileName)};end`;
     window.location.href = intentUrl;
   };
 
   return (
     <div>
-      <h2>{`Now Playing: ${chaptersName} - ${lecturesName || "Unknown Lecture"}`}</h2>
+      <h2>
+        {isLive
+          ? "🔴 Live Class"
+          : `Now Playing: ${chaptersName} - ${lecturesName || "Unknown Lecture"}`}
+      </h2>
 
-      <video ref={videoRef} controls playsInline style={{ width: "100%" }} />
-
-      <div style={{ textAlign: "center", marginTop: "20px" }}>
-        <button
-          onClick={handleDownloadClick}
-          style={{
-            backgroundColor: "#28a745",
-            color: "#fff",
-            padding: "10px 20px",
-            border: "none",
-            borderRadius: "5px",
-            fontSize: "16px",
-            cursor: "pointer",
-          }}
-        >
-          Download Lecture
-        </button>
+      <div style={{ position: "relative" }}>
+        <video ref={videoRef} playsInline controls />
       </div>
+
+      {!isLive && (
+        <div style={{ textAlign: "center", marginTop: "20px" }}>
+          <button
+            onClick={handleGoToDownloadClick}
+            style={{
+              backgroundColor: "#28a745",
+              color: "#fff",
+              padding: "10px 20px",
+              border: "none",
+              borderRadius: "5px",
+              fontSize: "16px",
+              cursor: "pointer",
+            }}
+          >
+            Download This Lecture
+          </button>
+        </div>
+      )}
     </div>
   );
 };
 
-export default VideoPlayer2;
+export default VideoPlayer;
