@@ -196,4 +196,4 @@ const VideoPlayer2 = () => {
   );
 };
 
-export default VideoPlayer;
+export default VideoPlayer2;
