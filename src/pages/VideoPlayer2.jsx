@@ -50,10 +50,7 @@ const VideoPlayer2 = () => {
     }
 
     playerRef.current = new Plyr(videoRef.current, {
-      controls: [
-        "play", "progress", "current-time", "mute", "volume", "fullscreen",
-        "settings", "quality", "speed", "picture-in-picture"
-      ],
+      controls: true,
       autoplay: false,
       mute: false,
       clickToPlay: true,
@@ -62,8 +59,8 @@ const VideoPlayer2 = () => {
         type: "application/x-mpegURL",
       }],
       quality: {
-        default: 720,
-        options: [360, 480, 720, 1080], // Adjust this based on your stream
+        default: 240,
+        options: [240, 360, 480, 720], // Adjust this based on your stream
       },
       speed: {
         default: 1,
