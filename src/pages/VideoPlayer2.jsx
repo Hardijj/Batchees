@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Plyr from "plyr";
-import "plyr/dist/plyr.css";  // Import Plyr CSS
+import Hls from "hls.js";
+import "plyr/dist/plyr.css";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const VideoPlayer2 = () => {
@@ -16,7 +17,6 @@ const VideoPlayer2 = () => {
 
   const { chapterName, lectureName, m3u8Url, notesUrl } = location.state || {};
   const isLive = location.pathname.includes("/video/live");
-  const defaultLiveUrl = "m3u8_link_here";
   const telegramDownloaderLink = "https://t.me/your_downloader_group";
 
   useEffect(() => {
@@ -43,21 +43,18 @@ const VideoPlayer2 = () => {
   useEffect(() => {
     if (!videoRef.current) return;
 
+    const video = videoRef.current;
     const videoSource = m3u8Url;
 
     if (playerRef.current) {
       playerRef.current.destroy();
     }
 
-    playerRef.current = new Plyr(videoRef.current, {
+    const player = new Plyr(video, {
       autoplay: false,
-      sources: [{
-        src: videoSource,
-        type: "application/x-mpegURL",
-      }],
       quality: {
         default: 240,
-        options: [240, 360, 480, 720], // Adjust this based on your stream
+        options: [240, 360, 480, 720],
       },
       speed: {
         default: 1,
@@ -66,7 +63,22 @@ const VideoPlayer2 = () => {
       settings: ["quality", "speed"],
     });
 
-    // Handle Plyr player events for study timer and time tracking
+    playerRef.current = player;
+
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(videoSource);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        video.play();
+      });
+    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      video.src = videoSource;
+      video.addEventListener("loadedmetadata", () => {
+        video.play();
+      });
+    }
+
     let sessionStart = null;
     let studyTimer = null;
 
@@ -82,25 +94,23 @@ const VideoPlayer2 = () => {
       setStudiedMinutes(Math.floor(newTotal / 60));
     };
 
-    playerRef.current.on("play", () => {
+    player.on("play", () => {
       sessionStart = Date.now();
       clearInterval(studyTimer);
       studyTimer = setInterval(updateStudyTime, 10000);
     });
 
-    playerRef.current.on("pause", () => {
+    player.on("pause", () => {
       updateStudyTime();
       clearInterval(studyTimer);
     });
 
-    playerRef.current.on("ended", () => {
+    player.on("ended", () => {
       updateStudyTime();
       clearInterval(studyTimer);
     });
 
-    // Handle double-tap to skip forward/backward
-    const videoContainer = videoRef.current.parentElement;
-    const videoEl = videoRef.current;
+    const videoContainer = video.parentElement;
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
     let holdTimeout = null;
@@ -109,9 +119,9 @@ const VideoPlayer2 = () => {
     const handleTouchStart = () => {
       if (!isMobile) return;
       holdTimeout = setTimeout(() => {
-        if (playerRef.current && !speedHeld) {
+        if (player && !speedHeld) {
           speedHeld = true;
-          playerRef.current.playbackRate = 2;
+          player.playbackRate = 2;
         }
       }, 1000);
     };
@@ -119,8 +129,8 @@ const VideoPlayer2 = () => {
     const handleTouchEnd = () => {
       if (!isMobile) return;
       clearTimeout(holdTimeout);
-      if (playerRef.current && speedHeld) {
-        playerRef.current.playbackRate = 1;
+      if (player && speedHeld) {
+        player.playbackRate = 1;
         speedHeld = false;
       }
     };
@@ -137,24 +147,24 @@ const VideoPlayer2 = () => {
 
       if (tapGap < 300) {
         if (tapX < width / 3) {
-          playerRef.current.currentTime = playerRef.current.currentTime - 10;
+          player.currentTime = player.currentTime - 10;
         } else if (tapX > (2 * width) / 3) {
-          playerRef.current.currentTime = playerRef.current.currentTime + 10;
+          player.currentTime = player.currentTime + 10;
         } else {
-          playerRef.current.paused ? playerRef.current.play() : playerRef.current.pause();
+          player.paused ? player.play() : player.pause();
         }
       }
     };
 
-    videoEl.addEventListener("touchstart", handleTouchStart);
-    videoEl.addEventListener("touchend", handleTouchEnd);
+    video.addEventListener("touchstart", handleTouchStart);
+    video.addEventListener("touchend", handleTouchEnd);
     videoContainer.addEventListener("touchend", handleDoubleTap);
 
     return () => {
-      videoEl.removeEventListener("touchstart", handleTouchStart);
-      videoEl.removeEventListener("touchend", handleTouchEnd);
+      video.removeEventListener("touchstart", handleTouchStart);
+      video.removeEventListener("touchend", handleTouchEnd);
       videoContainer.removeEventListener("touchend", handleDoubleTap);
-      playerRef.current.destroy();
+      player.destroy();
     };
   }, [m3u8Url, isLive]);
 
@@ -177,7 +187,7 @@ const VideoPlayer2 = () => {
       </h2>
 
       <div style={{ position: "relative" }}>
-        <video ref={videoRef} className="plyr"></video>
+        <video ref={videoRef} className="plyr" controls></video>
       </div>
 
       {!isLive && (
