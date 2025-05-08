@@ -43,17 +43,14 @@ const VideoPlayer2 = () => {
   useEffect(() => {
     if (!videoRef.current) return;
 
-    const videoSource = isLive ? defaultLiveUrl : m3u8Url || defaultLiveUrl;
+    const videoSource = m3u8Url;
 
     if (playerRef.current) {
       playerRef.current.destroy();
     }
 
     playerRef.current = new Plyr(videoRef.current, {
-      controls: true,
       autoplay: false,
-      mute: false,
-      clickToPlay: true,
       sources: [{
         src: videoSource,
         type: "application/x-mpegURL",
