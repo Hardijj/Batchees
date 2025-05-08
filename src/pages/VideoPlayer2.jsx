@@ -9,19 +9,23 @@ const VideoPlayer2 = () => {
   const navigate = useNavigate();
   const videoRef = useRef(null);
   const playerRef = useRef(null);
+  const hlsRef = useRef(null);
   const lastTap = useRef(0);
+
   const [studiedMinutes, setStudiedMinutes] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
+
   const chaptersName = localStorage.getItem("chapterName");
   const lecturesName = localStorage.getItem("lectureName");
 
   const { chapterName, lectureName, m3u8Url, notesUrl } = location.state || {};
+
   const isLive = location.pathname.includes("/video/live");
-  const telegramDownloaderLink = "https://t.me/your_downloader_group";
+  const defaultLiveUrl = "m3u8_link_here";
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-    if (!isLoggedIn) {
+    if (!isLoggedIn || !m3u8Url) {
       navigate("/login");
     }
   }, [navigate, m3u8Url]);
@@ -41,44 +45,40 @@ const VideoPlayer2 = () => {
   }, []);
 
   useEffect(() => {
-    if (!videoRef.current) return;
+    if (!videoRef.current || !m3u8Url) return;
 
-    const video = videoRef.current;
-    const videoSource = m3u8Url;
-
+    // Destroy previous Plyr + HLS
     if (playerRef.current) {
       playerRef.current.destroy();
     }
+    if (hlsRef.current) {
+      hlsRef.current.destroy();
+    }
 
-    const player = new Plyr(video, {
-      autoplay: false,
-      quality: {
-        default: 240,
-        options: [240, 360, 480, 720],
-      },
-      speed: {
-        default: 1,
-        options: [0.5, 1, 1.5, 2],
-      },
-      settings: ["quality", "speed"],
-    });
-
-    playerRef.current = player;
+    const video = videoRef.current;
 
     if (Hls.isSupported()) {
-      const hls = new Hls();
-      hls.loadSource(videoSource);
-      hls.attachMedia(video);
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        video.play();
+      hlsRef.current = new Hls();
+      hlsRef.current.loadSource(m3u8Url);
+      hlsRef.current.attachMedia(video);
+
+      hlsRef.current.on(Hls.Events.MANIFEST_PARSED, function () {
+        playerRef.current = new Plyr(video, {
+          speed: { options: [0.5, 1, 1.5, 2], default: 1 },
+          controls: ['play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen'],
+          settings: ['speed'],
+        });
       });
     } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-      video.src = videoSource;
-      video.addEventListener("loadedmetadata", () => {
-        video.play();
+      video.src = m3u8Url;
+      playerRef.current = new Plyr(video, {
+        speed: { options: [0.5, 1, 1.5, 2], default: 1 },
+        controls: ['play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen'],
+        settings: ['speed'],
       });
     }
 
+    // Study timer tracking
     let sessionStart = null;
     let studyTimer = null;
 
@@ -94,25 +94,33 @@ const VideoPlayer2 = () => {
       setStudiedMinutes(Math.floor(newTotal / 60));
     };
 
-    player.on("play", () => {
-      sessionStart = Date.now();
-      clearInterval(studyTimer);
-      studyTimer = setInterval(updateStudyTime, 10000);
-    });
+    const player = playerRef.current;
 
-    player.on("pause", () => {
-      updateStudyTime();
-      clearInterval(studyTimer);
-    });
+    const setupListeners = () => {
+      if (!player) return;
 
-    player.on("ended", () => {
-      updateStudyTime();
-      clearInterval(studyTimer);
-    });
+      player.on("play", () => {
+        sessionStart = Date.now();
+        clearInterval(studyTimer);
+        studyTimer = setInterval(updateStudyTime, 10000);
+      });
 
+      player.on("pause", () => {
+        updateStudyTime();
+        clearInterval(studyTimer);
+      });
+
+      player.on("ended", () => {
+        updateStudyTime();
+        clearInterval(studyTimer);
+      });
+    };
+
+    setTimeout(setupListeners, 500); // Delay to let Plyr initialize
+
+    // Gesture logic
     const videoContainer = video.parentElement;
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
     let holdTimeout = null;
     let speedHeld = false;
 
@@ -164,9 +172,11 @@ const VideoPlayer2 = () => {
       video.removeEventListener("touchstart", handleTouchStart);
       video.removeEventListener("touchend", handleTouchEnd);
       videoContainer.removeEventListener("touchend", handleDoubleTap);
-      player.destroy();
+
+      if (hlsRef.current) hlsRef.current.destroy();
+      if (playerRef.current) playerRef.current.destroy();
     };
-  }, [m3u8Url, isLive]);
+  }, [m3u8Url]);
 
   const handleGoToDownloadClick = () => {
     const fileName = `${chaptersName} ${lecturesName}`;
