@@ -1,11 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import videojs from "video.js";
-import "../styles/plyr.css";
-import "videojs-contrib-quality-levels";
-import "videojs-hls-quality-selector";
-import "videojs-mobile-ui";
-import "videojs-seek-buttons";
-import "videojs-responsive-controls";
+import Plyr from "plyr";
+import Hls from "hls.js";
+import "plyr/dist/plyr.css";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const VideoPlayer = () => {
@@ -20,9 +16,8 @@ const VideoPlayer = () => {
   const lecturesName = localStorage.getItem("lectureName");
 
   const { chapterName, lectureName, m3u8Url, notesUrl } = location.state || {};
-  const isLive = location.pathname.includes("/video/live");
-  const defaultLiveUrl = "m3u8_link_here";
-  const telegramDownloaderLink = "https://t.me/your_downloader_group";
+  const isLive = location.pathname.includes("/live");
+  const telegramDownloaderLink = "https://t.me/+UHFOhCOAU7xhYWY9"; // Replace with actual link
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
@@ -48,73 +43,27 @@ const VideoPlayer = () => {
   useEffect(() => {
     if (!videoRef.current) return;
 
-    const videoSource = isLive ? defaultLiveUrl : m3u8Url || defaultLiveUrl;
+    const video = videoRef.current;
 
-    if (playerRef.current) {
-      playerRef.current.dispose();
-    }
-
-    playerRef.current = videojs(
-      videoRef.current,
-      {
-        controls: true,
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(m3u8Url);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        playerRef.current = new Plyr(video, {
+          autoplay: false,
+          fluid: true,
+          playbackRates: [0.5, 1, 1.25, 1.5, 1.75, 2],
+        });
+      });
+    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      video.src = m3u8Url;
+      playerRef.current = new Plyr(video, {
         autoplay: false,
         fluid: true,
-        preload: "auto",
-        controlBar: {
-          children: [
-            'playToggle',
-            'volumePanel',
-            'CurrentTimeDisplay',
-            'TimeDivider',
-            'DurationDisplay',
-            'progressControl',
-            'playbackRateMenuButton',
-            'qualitySelector',
-            'pictureInPictureToggle',
-            'fullscreenToggle'
-          ]
-        },
         playbackRates: [0.5, 1, 1.25, 1.5, 1.75, 2],
-        html5: {
-          vhs: {
-            overrideNative: true,
-            enableLowInitialPlaylist: true,
-          },
-        },
-      },
-      function () {
-        this.mobileUi({
-          touchControls: {
-            tap: {
-              togglePlay: true,
-            },
-          },
-        });
-      }
-    );
-
-    // Responsive Controls Init (CORRECTED)
-    playerRef.current.ready(function () {
-      this.responsiveControls(); // Initialize after ready
-    });
-
-    playerRef.current.src({
-      src: videoSource,
-      type: "application/x-mpegURL",
-    });
-
-    playerRef.current.ready(() => {
-      playerRef.current.qualityLevels();
-      playerRef.current.hlsQualitySelector({
-        displayCurrentQuality: true,
       });
-
-      playerRef.current.seekButtons({
-        forward: 10,
-        back: 10,
-      });
-    });
+    }
 
     let sessionStart = null;
     let studyTimer = null;
@@ -131,64 +80,27 @@ const VideoPlayer = () => {
       setStudiedMinutes(Math.floor(newTotal / 60));
     };
 
-    playerRef.current.ready(() => {
-      playerRef.current.qualityLevels();
-      playerRef.current.hlsQualitySelector({
-        displayCurrentQuality: true,
-      });
+    const handlePlay = () => {
+      sessionStart = Date.now();
+      clearInterval(studyTimer);
+      studyTimer = setInterval(updateStudyTime, 10000);
+    };
 
-      const controlBar = playerRef.current.controlBar;
-      const playToggleEl = controlBar.getChild("playToggle")?.el();
-      if (playToggleEl) {
-        const timeDisplay = document.createElement("div");
-        timeDisplay.className = "vjs-custom-time-display";
-        timeDisplay.style.position = "absolute";
-        timeDisplay.style.bottom = "50px";
-        timeDisplay.style.left = "0";
-        timeDisplay.style.background = "rgba(0, 0, 0, 0.7)";
-        timeDisplay.style.color = "#fff";
-        timeDisplay.style.fontSize = "13px";
-        timeDisplay.style.padding = "4px 8px";
-        timeDisplay.style.borderRadius = "4px";
-        timeDisplay.style.whiteSpace = "nowrap";
-        timeDisplay.style.pointerEvents = "none";
-        timeDisplay.style.zIndex = "999";
-        timeDisplay.textContent = "00:00 / 00:00";
+    const handlePause = () => {
+      updateStudyTime();
+      clearInterval(studyTimer);
+    };
 
-        playToggleEl.style.position = "relative";
-        playToggleEl.appendChild(timeDisplay);
+    const handleEnded = () => {
+      updateStudyTime();
+      clearInterval(studyTimer);
+    };
 
-        playerRef.current.on("loadedmetadata", () => {
-          const duration = formatTime(playerRef.current.duration());
-          timeDisplay.textContent = `00:00 / ${duration}`;
-        });
+    video.addEventListener("play", handlePlay);
+    video.addEventListener("pause", handlePause);
+    video.addEventListener("ended", handleEnded);
 
-        playerRef.current.on("timeupdate", () => {
-          const currentTime = formatTime(playerRef.current.currentTime());
-          const duration = formatTime(playerRef.current.duration());
-          timeDisplay.textContent = `${currentTime} / ${duration}`;
-        });
-      }
-
-      playerRef.current.on("play", () => {
-        sessionStart = Date.now();
-        clearInterval(studyTimer);
-        studyTimer = setInterval(updateStudyTime, 10000);
-      });
-
-      playerRef.current.on("pause", () => {
-        updateStudyTime();
-        clearInterval(studyTimer);
-      });
-
-      playerRef.current.on("ended", () => {
-        updateStudyTime();
-        clearInterval(studyTimer);
-      });
-    });
-
-    const videoContainer = videoRef.current.parentElement;
-    const videoEl = videoRef.current;
+    const videoContainer = video.parentElement;
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
     let holdTimeout = null;
@@ -199,7 +111,7 @@ const VideoPlayer = () => {
       holdTimeout = setTimeout(() => {
         if (playerRef.current && !speedHeld) {
           speedHeld = true;
-          playerRef.current.playbackRate(2);
+          playerRef.current.speed = 2;
         }
       }, 1000);
     };
@@ -208,7 +120,7 @@ const VideoPlayer = () => {
       if (!isMobile) return;
       clearTimeout(holdTimeout);
       if (playerRef.current && speedHeld) {
-        playerRef.current.playbackRate(1);
+        playerRef.current.speed = 1;
         speedHeld = false;
       }
     };
@@ -225,43 +137,37 @@ const VideoPlayer = () => {
 
       if (tapGap < 300) {
         if (tapX < width / 3) {
-          playerRef.current.currentTime(playerRef.current.currentTime() - 10);
+          playerRef.current.currentTime -= 10;
         } else if (tapX > (2 * width) / 3) {
-          playerRef.current.currentTime(playerRef.current.currentTime() + 10);
+          playerRef.current.currentTime += 10;
         } else {
-          playerRef.current.paused()
-            ? playerRef.current.play()
-            : playerRef.current.pause();
+          playerRef.current.togglePlay();
         }
       }
     };
 
-    videoEl.addEventListener("touchstart", handleTouchStart);
-    videoEl.addEventListener("touchend", handleTouchEnd);
+    video.addEventListener("touchstart", handleTouchStart);
+    video.addEventListener("touchend", handleTouchEnd);
     videoContainer.addEventListener("touchend", handleDoubleTap);
 
     return () => {
-      videoEl.removeEventListener("touchstart", handleTouchStart);
-      videoEl.removeEventListener("touchend", handleTouchEnd);
+      video.removeEventListener("play", handlePlay);
+      video.removeEventListener("pause", handlePause);
+      video.removeEventListener("ended", handleEnded);
+      video.removeEventListener("touchstart", handleTouchStart);
+      video.removeEventListener("touchend", handleTouchEnd);
       videoContainer.removeEventListener("touchend", handleDoubleTap);
+      if (playerRef.current) {
+        playerRef.current.destroy();
+      }
+      clearInterval(studyTimer);
     };
   }, [m3u8Url, isLive]);
 
-  const formatTime = (timeInSeconds) => {
-    if (isNaN(timeInSeconds) || timeInSeconds < 0) return "00:00";
-    const minutes = Math.floor(timeInSeconds / 60);
-    const seconds = Math.floor(timeInSeconds % 60);
-    return `${minutes.toString().padStart(2, "0")}:${seconds
-      .toString()
-      .padStart(2, "0")}`;
-  };
-
-  const handleGoToDownloadClick = () => {
+  const handleDownloadClick = () => {
     const fileName = `${chaptersName} ${lecturesName}`;
     const downloadUrl = m3u8Url;
-    const intentUrl = `intent:${downloadUrl}#Intent;action=android.intent.action.VIEW;package=idm.internet.download.manager;scheme=1dmdownload;S.title=${encodeURIComponent(
-      fileName
-    )};end`;
+    const intentUrl = `intent:${downloadUrl}#Intent;action=android.intent.action.VIEW;package=idm.internet.download.manager;scheme=1dmdownload;S.title=${encodeURIComponent(fileName)};end`;
 
     window.location.href = intentUrl;
   };
@@ -275,13 +181,13 @@ const VideoPlayer = () => {
       </h2>
 
       <div style={{ position: "relative" }}>
-        <video ref={videoRef} className="video-js vjs-default-skin" />
+        <video ref={videoRef} className="plyr-react plyr" />
       </div>
 
       {!isLive && (
         <div style={{ textAlign: "center", marginTop: "20px" }}>
           <button
-            onClick={handleGoToDownloadClick}
+            onClick={handleDownloadClick}
             style={{
               backgroundColor: "#28a745",
               color: "#fff",
@@ -297,6 +203,88 @@ const VideoPlayer = () => {
           </button>
         </div>
       )}
+
+      {showPopup && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: "20px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: "#fff",
+            padding: "20px",
+            borderRadius: "10px",
+            boxShadow: "0 5px 15px rgba(0,0,0,0.3)",
+            zIndex: 1000,
+            textAlign: "center",
+            maxWidth: "90%",
+          }}
+        >
+          <p style={{ marginBottom: "15px", color: "#333" }}>
+            Link copied to clipboard. Go to Telegram group, paste the link, and send to download the video.
+          </p>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <button
+              onClick={() => setShowPopup(false)}
+              style={{
+                padding: "8px 16px",
+                backgroundColor: "#ddd",
+                border: "none",
+                borderRadius: "5px",
+                color: "#333",
+                fontWeight: "bold",
+                flex: 1,
+                marginRight: "10px",
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => window.open(telegramDownloaderLink, "_blank")}
+              style={{
+                padding: "8px 16px",
+                backgroundColor: "#007bff",
+                border: "none",
+                borderRadius: "5px",
+                color: "#fff",
+                fontWeight: "bold",
+                flex: 1,
+              }}
+            >
+              Go to Downloader
+            </button>
+          </div>
+        </div>
+      )}
+
+      {notesUrl && (
+        <div style={{ marginTop: "20px", textAlign: "center" }}>
+          <a
+            href={notesUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              padding: "12px 24px",
+              backgroundColor: "#007bff",
+              color: "#fff",
+              borderRadius: "5px",
+              textDecoration: "none",
+              fontWeight: "bold",
+              fontSize: "16px",
+              display: "inline-block",
+              boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+            }}
+          >
+            Download Notes
+          </a>
+        </div>
+      )}
+
+      <div style={{ marginTop: "30px", textAlign: "center" }}>
+        <p style={{ fontSize: "16px", color: "#555" }}>
+          Today's Study Time: <strong>{studiedMinutes} minutes</strong>
+        </p>
+      </div>
     </div>
   );
 };
