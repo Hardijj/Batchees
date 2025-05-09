@@ -59,6 +59,20 @@ const VideoPlayer = () => {
     } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
       video.src = m3u8Url;
       playerRef.current = new Plyr(video, {
+        controls: [
+            'play-large',
+            'play',
+            'progress',
+            'current-time',
+            'mute',
+            'volume',
+            'captions',
+            'settings',
+            'pip',
+            'airplay',
+            'fullscreen',
+          ],
+          settings: ['quality', 'speed', 'loop'],
         autoplay: false,
         fluid: true,
         playbackRates: [0.5, 1, 1.25, 1.5, 1.75, 2],
