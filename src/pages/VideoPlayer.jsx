@@ -17,7 +17,7 @@ const VideoPlayer = () => {
 
   const { chapterName, lectureName, m3u8Url, notesUrl } = location.state || {};
   const isLive = location.pathname.includes("/live");
-  const telegramDownloaderLink = "https://t.me/+UHFOhCOAU7xhYWY9"; // Replace with actual link
+  const telegramDownloaderLink = "https://t.me/+UHFOhCOAU7xhYWY9";
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
@@ -42,42 +42,39 @@ const VideoPlayer = () => {
 
   useEffect(() => {
     if (!videoRef.current) return;
-
     const video = videoRef.current;
 
-    if (Hls.isSupported()) {
-      const hls = new Hls();
-      hls.loadSource(m3u8Url);
-      hls.attachMedia(video);
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        playerRef.current = new Plyr(video, {
-          autoplay: false,
-          fluid: true,
-          playbackRates: [0.5, 1, 1.25, 1.5, 1.75, 2],
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    let hls;
+
+    const initPlayer = () => {
+      if (Hls.isSupported()) {
+        hls = new Hls();
+        hls.loadSource(m3u8Url);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          setupPlyr();
         });
-      });
-    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-      video.src = m3u8Url;
+      } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+        video.src = m3u8Url;
+        setupPlyr();
+      }
+    };
+
+    const setupPlyr = () => {
       playerRef.current = new Plyr(video, {
         controls: [
-            'play-large',
-            'play',
-            'progress',
-            'current-time',
-            'mute',
-            'volume',
-            'captions',
-            'settings',
-            'pip',
-            'airplay',
-            'fullscreen',
-          ],
-          settings: ['quality', 'speed', 'loop'],
+          "play-large", "play", "progress", "current-time", "mute", "volume",
+          "captions", "settings", "pip", "airplay", "fullscreen",
+        ],
+        settings: ["quality", "speed", "loop"],
         autoplay: false,
         fluid: true,
         playbackRates: [0.5, 1, 1.25, 1.5, 1.75, 2],
       });
-    }
+
+      bindCustomGestures();
+    };
 
     let sessionStart = null;
     let studyTimer = null;
@@ -114,75 +111,72 @@ const VideoPlayer = () => {
     video.addEventListener("pause", handlePause);
     video.addEventListener("ended", handleEnded);
 
-    const videoContainer = video.parentElement;
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const bindCustomGestures = () => {
+      const videoContainer = video.parentElement;
 
-    let holdTimeout = null;
-    let speedHeld = false;
+      let holdTimeout = null;
+      let speedHeld = false;
 
-    const handleTouchStart = () => {
-      if (!isMobile) return;
-      holdTimeout = setTimeout(() => {
-        if (playerRef.current && !speedHeld) {
-          speedHeld = true;
-          playerRef.current.speed = 2;
+      const handleTouchStart = () => {
+        if (!isMobile) return;
+        holdTimeout = setTimeout(() => {
+          if (playerRef.current && !speedHeld) {
+            speedHeld = true;
+            playerRef.current.speed = 2;
+          }
+        }, 1000);
+      };
+
+      const handleTouchEnd = () => {
+        if (!isMobile) return;
+        clearTimeout(holdTimeout);
+        if (playerRef.current && speedHeld) {
+          playerRef.current.speed = 1;
+          speedHeld = false;
         }
-      }, 1000);
-    };
+      };
 
-    const handleTouchEnd = () => {
-      if (!isMobile) return;
-      clearTimeout(holdTimeout);
-      if (playerRef.current && speedHeld) {
-        playerRef.current.speed = 1;
-        speedHeld = false;
-      }
-    };
+      const handleDoubleTap = (event) => {
+        const currentTime = Date.now();
+        const tapGap = currentTime - lastTap.current;
+        lastTap.current = currentTime;
 
-    const handleDoubleTap = (event) => {
-      const currentTime = Date.now();
-      const tapGap = currentTime - lastTap.current;
-      lastTap.current = currentTime;
+        const touch = event.changedTouches[0];
+        const rect = videoContainer.getBoundingClientRect();
+        const tapX = touch.clientX - rect.left;
+        const width = rect.width;
 
-      const touch = event.changedTouches[0];
-      const rect = videoContainer.getBoundingClientRect();
-      const tapX = touch.clientX - rect.left;
-      const width = rect.width;
-
-      if (tapGap < 300) {
-        if (tapX < width / 3) {
-          playerRef.current.currentTime -= 10;
-        } else if (tapX > (2 * width) / 3) {
-          playerRef.current.currentTime += 10;
-        } else {
-          playerRef.current.togglePlay();
+        if (tapGap < 300) {
+          if (tapX < width / 3) {
+            playerRef.current.currentTime -= 10;
+          } else if (tapX > (2 * width) / 3) {
+            playerRef.current.currentTime += 10;
+          } else {
+            playerRef.current.togglePlay();
+          }
         }
-      }
+      };
+
+      video.addEventListener("touchstart", handleTouchStart);
+      video.addEventListener("touchend", handleTouchEnd);
+      videoContainer.addEventListener("touchend", handleDoubleTap);
     };
 
-    video.addEventListener("touchstart", handleTouchStart);
-    video.addEventListener("touchend", handleTouchEnd);
-    videoContainer.addEventListener("touchend", handleDoubleTap);
+    initPlayer();
 
     return () => {
+      if (hls) hls.destroy();
+      if (playerRef.current) playerRef.current.destroy();
       video.removeEventListener("play", handlePlay);
       video.removeEventListener("pause", handlePause);
       video.removeEventListener("ended", handleEnded);
-      video.removeEventListener("touchstart", handleTouchStart);
-      video.removeEventListener("touchend", handleTouchEnd);
-      videoContainer.removeEventListener("touchend", handleDoubleTap);
-      if (playerRef.current) {
-        playerRef.current.destroy();
-      }
       clearInterval(studyTimer);
     };
   }, [m3u8Url, isLive]);
 
   const handleDownloadClick = () => {
     const fileName = `${chaptersName} ${lecturesName}`;
-    const downloadUrl = m3u8Url;
-    const intentUrl = `intent:${downloadUrl}#Intent;action=android.intent.action.VIEW;package=idm.internet.download.manager;scheme=1dmdownload;S.title=${encodeURIComponent(fileName)};end`;
-
+    const intentUrl = `intent:${m3u8Url}#Intent;action=android.intent.action.VIEW;package=idm.internet.download.manager;scheme=1dmdownload;S.title=${encodeURIComponent(fileName)};end`;
     window.location.href = intentUrl;
   };
 
@@ -293,12 +287,6 @@ const VideoPlayer = () => {
           </a>
         </div>
       )}
-
-      <div style={{ marginTop: "30px", textAlign: "center" }}>
-        <p style={{ fontSize: "16px", color: "#555" }}>
-          Today's Study Time: <strong>{studiedMinutes} minutes</strong>
-        </p>
-      </div>
     </div>
   );
 };
