@@ -82,6 +82,8 @@ const VideoPlayer = () => {
         hls.currentLevel = levelIndex;
       },
     },
+    autoplay: false,
+    fluid: true,
     playbackRates: [0.5, 1, 1.25, 1.5, 1.75, 2],
   });
 
