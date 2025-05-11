@@ -62,19 +62,31 @@ const VideoPlayer = () => {
     };
 
     const setupPlyr = () => {
-      playerRef.current = new Plyr(video, {
-        controls: [
-          "play-large", "play", "progress", "current-time", "mute", "volume",
-          "captions", "settings", "pip", "airplay", "fullscreen",
-        ],
-        settings: ["quality", "speed", "loop"],
-        autoplay: false,
-        fluid: true,
-        playbackRates: [0.5, 1, 1.25, 1.5, 1.75, 2],
-      });
+  if (!hls || !playerRef.current) return;
 
-      bindCustomGestures();
-    };
+  // Extract available quality options from HLS
+  const availableQualities = hls.levels.map((level) => level.height).sort((a, b) => b - a);
+
+  playerRef.current = new Plyr(video, {
+    controls: [
+      "play-large", "play", "progress", "current-time", "mute", "volume",
+      "captions", "settings", "pip", "airplay", "fullscreen",
+    ],
+    settings: ["quality", "speed", "loop"],
+    quality: {
+      default: availableQualities[0],
+      options: availableQualities,
+      forced: true,
+      onChange: (newQuality) => {
+        const levelIndex = hls.levels.findIndex((l) => l.height === newQuality);
+        hls.currentLevel = levelIndex;
+      },
+    },
+    playbackRates: [0.5, 1, 1.25, 1.5, 1.75, 2],
+  });
+
+  bindCustomGestures();
+};
 
     let sessionStart = null;
     let studyTimer = null;
