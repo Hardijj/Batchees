@@ -68,10 +68,6 @@ const VideoPlayer = () => {
   const availableQualities = hls.levels.map((level) => level.height).sort((a, b) => b - a);
 
   playerRef.current = new Plyr(video, {
-    controls: [
-      "play-large", "play", "progress", "current-time", "mute", "volume",
-      "captions", "settings", "pip", "airplay", "fullscreen",
-    ],
     settings: ["quality", "speed", "loop"],
     quality: {
       default: availableQualities[0],
