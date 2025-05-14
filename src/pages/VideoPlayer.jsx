@@ -58,20 +58,40 @@ const VideoPlayer = () => {
     };
 
     if (Hls.isSupported()) {
-      hls = new Hls();
-      hls.loadSource(m3u8Url);
-      hls.attachMedia(video);
-    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-      video.src = m3u8Url;
-    }
+  hls = new Hls();
+  hls.loadSource(m3u8Url);
+  hls.attachMedia(video);
 
-    playerRef.current = new Plyr(video, {
-      speed: { selected: 1, options: [0.5, 1, 1.25, 1.5, 2] },
-      controls: [
-        "play-large", "play", "rewind", "fast-forward", "progress", "current-time",
-        "duration", "mute", "volume", "captions", "settings", "fullscreen"
-      ],
+  hls.on(Hls.Events.MANIFEST_PARSED, function (_, data) {
+    const availableQualities = data.levels.map((l) => l.height).sort((a, b) => b - a);
+    playerRef.current?.quality?.update({ options: availableQualities });
+
+    // Set default quality (you can change this)
+    hls.currentLevel = availableQualities.indexOf(720);
+
+    // Optional: Listen for user quality changes
+    playerRef.current.on("qualitychange", (event) => {
+      const quality = event.detail.plyr.quality;
+      const levelIndex = data.levels.findIndex((l) => l.height === quality);
+      if (levelIndex !== -1) {
+        hls.currentLevel = levelIndex;
+      }
     });
+  });
+
+  playerRef.current = new Plyr(video, {
+    quality: {
+      default: 720,
+      options: [],
+      forced: true,
+      onChange: () => {},
+    },
+    controls: [
+      "play-large", "play", "rewind", "fast-forward", "progress", "current-time",
+      "duration", "mute", "volume", "captions", "settings", "fullscreen"
+    ],
+  });
+      }
 
     playerRef.current.on("play", () => {
       sessionStart = Date.now();
