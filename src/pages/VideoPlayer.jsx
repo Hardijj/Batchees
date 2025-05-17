@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Plyr from "plyr";
 import Hls from "hls.js";
-import "plyr/dist/plyr.css";
+import "../styles/plyr.css";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const VideoPlayer = () => {
