@@ -15,6 +15,7 @@ import VideoPlayer from "./pages/VideoPlayer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import VideoPlayer2 from "./pages/VideoPlayer2"; // Adjust path as needed
 import MathsPage from "./pages/MathsPage";
+import LecturesPage from './pages/LecturePage';
 
 // Inside your <Routes>
 
@@ -35,6 +36,7 @@ function App() {
         <Route path="/lectures/9/:subject" element={<ProtectedRoute><Lectures9 /></ProtectedRoute>} />
         <Route path="/lectures/10/:subject" element={<ProtectedRoute><Lectures /></ProtectedRoute>} />
         <Route path="/lectures/11/:subject" element={<ProtectedRoute><Lectures11 /></ProtectedRoute>} />
+        <Route path="/lecturees/11" element={<LecturesPage />} />
 
         {/* Chapter Lectures */}
         <Route path="/chapter-lectures/9/:subject/:chapterIndex" element={<ProtectedRoute><ChapterLectures9 /></ProtectedRoute>} />
