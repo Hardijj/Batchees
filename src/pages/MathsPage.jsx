@@ -12,7 +12,7 @@ export default function MathsPage() {
       return;
     }
 
-    fetch("/api/maths.php?api=1")
+    fetch("https://automate-eduvibe-nt.wasmer.app/?api=1")
       .then(res => res.json())
       .then(data => {
         const startIndex = data.findIndex(l => l.name === "Trigonometry L2");
