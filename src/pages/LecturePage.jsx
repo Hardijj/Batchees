@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const subjects = [
-  { api: 'maths', name: 'Maths' },
-  { api: 'chem', name: 'Chemistry' },
-  { api: 'bio', name: 'Biology' },
-  { api: 'phy', name: 'Physics' }
+  { name: 'Maths', api: 'maths' },
+  { name: 'Physics', api: 'phy' },
+  { name: 'Chemistry', api: 'chem' },
+  { name: 'Biology', api: 'bio' }
 ];
 
 const LecturesPage = () => {
@@ -14,20 +14,22 @@ const LecturesPage = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const loadLectures = async (subject) => {
-    setSelectedSubject(subject.name);
-    setLectures([]);
+  const fetchLectures = async (api, name) => {
     setLoading(true);
     try {
-      const res = await fetch(`https://automate-eduvibe-nt11.wasmer.app?api=${subject.api}`);
+      const res = await fetch(`https://automate-eduvibe-nt11.wasmer.app/?api=${api}`);
       const data = await res.json();
       setLectures(data);
+      setSelectedSubject(name);
     } catch (err) {
-      console.error('Fetch error:', err);
-      setLectures([]);
+      alert("Failed to fetch lectures.");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSubjectClick = (subject) => {
+    fetchLectures(subject.api, subject.name);
   };
 
   const goToVideo = (index) => {
@@ -36,49 +38,55 @@ const LecturesPage = () => {
 
   return (
     <div style={{ padding: 20, fontFamily: 'sans-serif' }}>
-      <h1>Class 10 Lectures</h1>
+      {!selectedSubject && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20 }}>
+          {subjects.map((subject) => (
+            <div
+              key={subject.api}
+              onClick={() => handleSubjectClick(subject)}
+              style={{
+                backgroundColor: '#f0f0f0',
+                padding: 30,
+                textAlign: 'center',
+                borderRadius: 12,
+                fontSize: 20,
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+              }}
+            >
+              {subject.name}
+            </div>
+          ))}
+        </div>
+      )}
 
-      <div style={{ marginBottom: 20 }}>
-        {subjects.map((s) => (
-          <button
-            key={s.api}
-            onClick={() => loadLectures(s)}
-            style={{
-              margin: 5,
-              padding: '10px 16px',
-              backgroundColor: '#007bff',
-              color: '#fff',
-              border: 'none',
-              borderRadius: 5,
-              cursor: 'pointer'
-            }}
-          >
-            {s.name}
-          </button>
-        ))}
-      </div>
-
-      {selectedSubject && <h2>{selectedSubject} Lectures</h2>}
-
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        lectures.map((lecture, index) => (
-          <div
-            key={index}
-            onClick={() => goToVideo(index)}
-            style={{
-              margin: '10px 0',
-              padding: '10px',
-              backgroundColor: '#f9f9f9',
-              borderRadius: 5,
-              boxShadow: '0 0 5px rgba(0,0,0,0.1)',
-              cursor: 'pointer'
-            }}
-          >
-            {lecture.name}
-          </div>
-        ))
+      {selectedSubject && (
+        <div>
+          <h2 style={{ marginTop: 0 }}>{selectedSubject} Lectures</h2>
+          {loading ? (
+            <p>Loading...</p>
+          ) : (
+            <div>
+              {lectures.map((lecture, index) => (
+                <div
+                  key={index}
+                  onClick={() => goToVideo(index)}
+                  style={{
+                    marginBottom: 10,
+                    padding: 15,
+                    backgroundColor: '#fff',
+                    borderRadius: 8,
+                    border: '1px solid #ddd',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {lecture.name}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
