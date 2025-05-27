@@ -19,7 +19,7 @@ const LecturesPage = () => {
     setLectures([]);
     setLoading(true);
     try {
-      const res = await fetch(`https://automate-eduvibe-nt11.wasmer.app/?api=${subject.api}`);
+      const res = await fetch(`https://automate-eduvibe-nt11.wasmer.app?api=${subject.api}`);
       const data = await res.json();
       setLectures(data);
     } catch (err) {
