@@ -33,11 +33,34 @@ const LecturesPage = () => {
   };
 
   const goToVideo = (index) => {
-    navigate(`/video/11/${selectedSubject}/${index}`);
+    navigate(`/video/11/${selectedSubject}/${index}`, {
+      state: {
+        m3u8Url: lectures[index].m3u8Url,
+        notesUrl: lectures[index].notesUrl,
+        title: lectures[index].name
+      }
+    });
+  };
+
+  const handleBack = () => {
+    setSelectedSubject(null);
+    setLectures([]);
   };
 
   return (
-    <div style={{ padding: 20, fontFamily: 'sans-serif' }}>
+    <div
+      style={{
+        minHeight: '100vh',
+        backgroundColor: '#121212',
+        color: '#ffffff',
+        fontFamily: 'Poppins, sans-serif',
+        padding: 20
+      }}
+    >
+      <style>
+        {`@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');`}
+      </style>
+
       {!selectedSubject && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20 }}>
           {subjects.map((subject) => (
@@ -45,15 +68,18 @@ const LecturesPage = () => {
               key={subject.api}
               onClick={() => handleSubjectClick(subject)}
               style={{
-                backgroundColor: '#f0f0f0',
+                background: '#1f1f1f',
                 padding: 30,
                 textAlign: 'center',
                 borderRadius: 12,
                 fontSize: 20,
-                fontWeight: 'bold',
+                fontWeight: 600,
                 cursor: 'pointer',
-                boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+                transition: 'transform 0.2s',
+                boxShadow: '0 4px 15px rgba(0,0,0,0.5)'
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
             >
               {subject.name}
             </div>
@@ -63,7 +89,24 @@ const LecturesPage = () => {
 
       {selectedSubject && (
         <div>
-          <h2 style={{ marginTop: 0 }}>{selectedSubject} Lectures</h2>
+          <button
+            onClick={handleBack}
+            style={{
+              marginBottom: 20,
+              backgroundColor: '#333',
+              color: '#fff',
+              border: 'none',
+              padding: '10px 20px',
+              borderRadius: 8,
+              cursor: 'pointer',
+              fontWeight: 600
+            }}
+          >
+            ← Back
+          </button>
+
+          <h2 style={{ fontWeight: 600 }}>{selectedSubject} Lectures</h2>
+
           {loading ? (
             <p>Loading...</p>
           ) : (
@@ -73,13 +116,17 @@ const LecturesPage = () => {
                   key={index}
                   onClick={() => goToVideo(index)}
                   style={{
-                    marginBottom: 10,
+                    marginBottom: 12,
                     padding: 15,
-                    backgroundColor: '#fff',
-                    borderRadius: 8,
-                    border: '1px solid #ddd',
-                    cursor: 'pointer'
+                    backgroundColor: '#1e1e1e',
+                    borderRadius: 10,
+                    border: '1px solid #333',
+                    cursor: 'pointer',
+                    transition: 'background 0.2s',
+                    fontWeight: 500
                   }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = '#292929')}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = '#1e1e1e')}
                 >
                   {lecture.name}
                 </div>
