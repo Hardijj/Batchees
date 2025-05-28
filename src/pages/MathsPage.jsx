@@ -15,7 +15,7 @@ export default function MathsPage() {
     fetch("https://automate-eduvibe-nt11.wasmer.app/?api=maths")
       .then(res => res.json())
       .then(data => {
-        const startIndex = data.findIndex(l => l.name === "Trigonometry L2");
+        const startIndex = data.findIndex(l => l.name === "Relations And Functions L2");
         const filtered = startIndex >= 0 ? data.slice(startIndex) : data;
         setLectures(filtered);
       });
