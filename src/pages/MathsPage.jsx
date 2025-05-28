@@ -12,10 +12,10 @@ export default function MathsPage() {
       return;
     }
 
-    fetch("https://automate-eduvibe-nt11.wasmer.app/?api=maths")
+    fetch("https://automate-eduvibe-nt11.wasmer.app/?api=chem")
       .then(res => res.json())
       .then(data => {
-        const startIndex = data.findIndex(l => l.name === "Relations And Functions L2");
+        const startIndex = data.findIndex(l => l.name === "Classification of Elements 01");
         const filtered = startIndex >= 0 ? data.slice(startIndex) : data;
         setLectures(filtered);
       });
