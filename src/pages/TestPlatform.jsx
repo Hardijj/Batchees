@@ -85,8 +85,12 @@ const TestPlatform = () => {
   const current = questions[currentQuestion];
 
   const score = questions.reduce((acc, q, i) => {
-    return acc + (answers[i] === q.correctAnswer ? 1 :
-                  <div className="top-bar">
+    return acc + (answers[i] === q.correctAnswer ? 1 : 0);
+  }, 0);
+
+  return (
+    <div className="container">
+      <div className="top-bar">
         <div>Time Left: {formatTime(timer)}</div>
         {submitted && <div>Score: {score}/{questions.length}</div>}
       </div>
