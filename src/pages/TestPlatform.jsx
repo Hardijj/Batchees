@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import testData from './testdata';
-import ReactMarkdown from 'react-markdown';
 import "../styles/styles.css";
 
 const TestPlatform = () => {
@@ -40,25 +39,22 @@ const TestPlatform = () => {
   };
 
   const handleNext = () => {
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(q => q + 1);
-    }
+    setCurrentQuestion(q => Math.min(q + 1, questions.length - 1));
   };
 
   const handlePrev = () => {
-    if (currentQuestion > 0) {
-      setCurrentQuestion(q => q - 1);
-    }
+    setCurrentQuestion(q => Math.max(q - 1, 0));
   };
 
   const handleSubmit = () => {
     setSubmitted(true);
+    setCurrentQuestion(0); // Reset to first question
   };
 
   if (!selectedSubject) {
     return (
       <div className="container">
-        <h1>Choose a Subject</h1>
+        <h1 className="heading">Choose a Subject</h1>
         <div className="grid">
           {Object.keys(testData).map(subject => (
             <div key={subject} className="card" onClick={() => setSelectedSubject(subject)}>
@@ -73,7 +69,7 @@ const TestPlatform = () => {
   if (!selectedTest) {
     return (
       <div className="container">
-        <h1>{selectedSubject} - Choose a Test</h1>
+        <h1 className="heading">{selectedSubject} - Choose a Test</h1>
         <div className="grid">
           {Object.keys(testData[selectedSubject]).map(test => (
             <div key={test} className="card" onClick={() => setSelectedTest(test)}>
@@ -101,15 +97,11 @@ const TestPlatform = () => {
       </div>
 
       <div className="question-box">
-        <div className="question-header">Question {currentQuestion + 1} / {questions.length}</div>
-
-        {current.markdown ? (
-          <div className="markdown-question">
-            <ReactMarkdown>{current.question}</ReactMarkdown>
-          </div>
-        ) : (
-          <h2>{current.question}</h2>
-        )}
+        <div className="question-header">
+          Question {currentQuestion + 1} / {questions.length}
+        </div>
+        <h2 className="question" style={{ fontSize: '18px' }}>{current.question}</h2>
+</pre>
 
         <div className="options">
           {current.options.map((option, index) => {
@@ -125,34 +117,35 @@ const TestPlatform = () => {
               >
                 {option}
                 {submitted && isSelected && (
-                  <div className="tag">Your Answer</div>
+                  <div style={{ fontSize: '12px', color: '#555' }}>
+                    Your Answer
+                  </div>
                 )}
-                {submitted && isCorrect && (
-                  <div className="tag correct-tag">Correct Answer</div>
+                {submitted && index === (current.correctAnswer - 1) && (
+                  <div style={{ fontSize: '12px', color: 'green' }}>
+                    Correct Answer
+                  </div>
                 )}
               </div>
             );
           })}
         </div>
 
-        {submitted && current.explanation && (
+        {submitted && (
           <div className="explanation">
             <strong>Explanation:</strong> {current.explanation}
           </div>
         )}
       </div>
 
-      <div className="sticky-nav">
-        {currentQuestion > 0 && (
-          <button onClick={handlePrev}>Previous</button>
-        )}
-        {currentQuestion < questions.length - 1 && (
-          <button onClick={handleNext}>Next</button>
-        )}
-        {currentQuestion === questions.length - 1 && !submitted && (
-          <button className="submit-btn" onClick={handleSubmit}>Submit Test</button>
-        )}
+      <div className="nav-buttons">
+        <button onClick={handlePrev} disabled={currentQuestion === 0}>Previous</button>
+        <button onClick={handleNext} disabled={currentQuestion === questions.length - 1}>Next</button>
       </div>
+
+      {!submitted && currentQuestion === questions.length - 1 && (
+        <button className="submit-btn" onClick={handleSubmit}>Submit Test</button>
+      )}
     </div>
   );
 };
