@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import testData from './testdata';
+import ReactMarkdown from 'react-markdown';
 import "../styles/styles.css";
 
 const TestPlatform = () => {
@@ -39,16 +40,20 @@ const TestPlatform = () => {
   };
 
   const handleNext = () => {
-    setCurrentQuestion(q => Math.min(q + 1, questions.length - 1));
+    if (currentQuestion < questions.length - 1) {
+      setCurrentQuestion(q => q + 1);
+    }
   };
 
   const handlePrev = () => {
-    setCurrentQuestion(q => Math.max(q - 1, 0));
+    if (currentQuestion > 0) {
+      setCurrentQuestion(q => q - 1);
+    }
   };
 
   const handleSubmit = () => {
     setSubmitted(true);
-    setCurrentQuestion(0); // Reset to first question
+    setCurrentQuestion(0); // Optional: reset to first question
   };
 
   if (!selectedSubject) {
@@ -100,8 +105,14 @@ const TestPlatform = () => {
         <div className="question-header">
           Question {currentQuestion + 1} / {questions.length}
         </div>
-        <h2 className="question" style={{ fontSize: '18px' }}>{current.question}</h2>
-</pre>
+
+        {current.markdown ? (
+          <div className="markdown-question">
+            <ReactMarkdown>{current.question}</ReactMarkdown>
+          </div>
+        ) : (
+          <h2 className="question" style={{ fontSize: '16px' }}>{current.question}</h2>
+        )}
 
         <div className="options">
           {current.options.map((option, index) => {
@@ -117,21 +128,17 @@ const TestPlatform = () => {
               >
                 {option}
                 {submitted && isSelected && (
-                  <div style={{ fontSize: '12px', color: '#555' }}>
-                    Your Answer
-                  </div>
+                  <div style={{ fontSize: '12px', color: '#555' }}>Your Answer</div>
                 )}
                 {submitted && index === (current.correctAnswer - 1) && (
-                  <div style={{ fontSize: '12px', color: 'green' }}>
-                    Correct Answer
-                  </div>
+                  <div style={{ fontSize: '12px', color: 'green' }}>Correct Answer</div>
                 )}
               </div>
             );
           })}
         </div>
 
-        {submitted && (
+        {submitted && current.explanation && (
           <div className="explanation">
             <strong>Explanation:</strong> {current.explanation}
           </div>
@@ -139,13 +146,16 @@ const TestPlatform = () => {
       </div>
 
       <div className="nav-buttons">
-        <button onClick={handlePrev} disabled={currentQuestion === 0}>Previous</button>
-        <button onClick={handleNext} disabled={currentQuestion === questions.length - 1}>Next</button>
+        {currentQuestion > 0 && (
+          <button onClick={handlePrev}>Previous</button>
+        )}
+        {!submitted && currentQuestion < questions.length - 1 && (
+          <button onClick={handleNext}>Next</button>
+        )}
+        {!submitted && currentQuestion === questions.length - 1 && (
+          <button className="submit-btn" onClick={handleSubmit}>Submit Test</button>
+        )}
       </div>
-
-      {!submitted && currentQuestion === questions.length - 1 && (
-        <button className="submit-btn" onClick={handleSubmit}>Submit Test</button>
-      )}
     </div>
   );
 };
