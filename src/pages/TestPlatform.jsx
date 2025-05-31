@@ -53,13 +53,12 @@ const TestPlatform = () => {
 
   const handleSubmit = () => {
     setSubmitted(true);
-    setCurrentQuestion(0); // Optional: reset to first question
   };
 
   if (!selectedSubject) {
     return (
       <div className="container">
-        <h1 className="heading">Choose a Subject</h1>
+        <h1>Choose a Subject</h1>
         <div className="grid">
           {Object.keys(testData).map(subject => (
             <div key={subject} className="card" onClick={() => setSelectedSubject(subject)}>
@@ -74,7 +73,7 @@ const TestPlatform = () => {
   if (!selectedTest) {
     return (
       <div className="container">
-        <h1 className="heading">{selectedSubject} - Choose a Test</h1>
+        <h1>{selectedSubject} - Choose a Test</h1>
         <div className="grid">
           {Object.keys(testData[selectedSubject]).map(test => (
             <div key={test} className="card" onClick={() => setSelectedTest(test)}>
@@ -102,16 +101,14 @@ const TestPlatform = () => {
       </div>
 
       <div className="question-box">
-        <div className="question-header">
-          Question {currentQuestion + 1} / {questions.length}
-        </div>
+        <div className="question-header">Question {currentQuestion + 1} / {questions.length}</div>
 
         {current.markdown ? (
           <div className="markdown-question">
-            <ReactMarkdown>{current.question}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{current.question}</ReactMarkdown>
           </div>
         ) : (
-          <h2 className="question" style={{ fontSize: '16px' }}>{current.question}</h2>
+          <h2>{current.question}</h2>
         )}
 
         <div className="options">
@@ -128,10 +125,10 @@ const TestPlatform = () => {
               >
                 {option}
                 {submitted && isSelected && (
-                  <div style={{ fontSize: '12px', color: '#555' }}>Your Answer</div>
+                  <div className="tag">Your Answer</div>
                 )}
-                {submitted && index === (current.correctAnswer - 1) && (
-                  <div style={{ fontSize: '12px', color: 'green' }}>Correct Answer</div>
+                {submitted && isCorrect && (
+                  <div className="tag correct-tag">Correct Answer</div>
                 )}
               </div>
             );
@@ -145,16 +142,17 @@ const TestPlatform = () => {
         )}
       </div>
 
-      <div className="nav-buttons">
+      <div className="sticky-nav">
         {currentQuestion > 0 && (
           <button onClick={handlePrev}>Previous</button>
         )}
-        {!submitted && currentQuestion < questions.length - 1 && (
+        {currentQuestion < questions.length - 1 && (
           <button onClick={handleNext}>Next</button>
         )}
-        {!submitted && currentQuestion === questions.length - 1 && (
+        {currentQuestion === questions.length - 1 && !submitted && (
           <button className="submit-btn" onClick={handleSubmit}>Submit Test</button>
         )}
+        {/* Show Next/Prev even after submission */}
       </div>
     </div>
   );
