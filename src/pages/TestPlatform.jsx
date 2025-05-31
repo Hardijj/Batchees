@@ -51,13 +51,6 @@ const TestPlatform = () => {
     setCurrentQuestion(0);
   };
 
-  const handleBackToTests = () => {
-    setSubmitted(false);
-    setSelectedTest(null);
-    setAnswers({});
-    setTimer(600);
-  };
-
   if (!selectedSubject) {
     return (
       <div className="container">
@@ -96,6 +89,20 @@ const TestPlatform = () => {
     return acc + (answers[i] === (q.correctAnswer - 1) ? 1 : 0);
   }, 0);
 
+  const renderQuestion = () => {
+    if (typeof current.question === 'string' && current.question.includes("|")) {
+      return (
+        <pre className="question" style={{ fontSize: '16px', whiteSpace: 'pre-wrap' }}>
+          {current.question}
+        </pre>
+      );
+    } else if (typeof current.question === 'string') {
+      return <h2 className="question">{current.question}</h2>;
+    } else {
+      return <div className="question">{current.question}</div>;
+    }
+  };
+
   return (
     <div className="container">
       <div className="top-bar">
@@ -107,13 +114,8 @@ const TestPlatform = () => {
         <div className="question-header">
           Question {currentQuestion + 1} / {questions.length}
         </div>
-        {typeof current.question === 'string' ? (
-  <h2 className="question">{current.question}</h2>
-) : (
-  <pre className="question" style={{ fontSize: '16px' }}>
-    {current.question}
-  </pre>
-)}
+
+        {renderQuestion()}
 
         <div className="options">
           {current.options.map((option, index) => {
@@ -129,14 +131,10 @@ const TestPlatform = () => {
               >
                 {option}
                 {submitted && isSelected && (
-                  <div style={{ fontSize: '12px', color: '#555' }}>
-                    Your Answer
-                  </div>
+                  <div style={{ fontSize: '12px', color: '#555' }}>Your Answer</div>
                 )}
                 {submitted && index === (current.correctAnswer - 1) && (
-                  <div style={{ fontSize: '12px', color: 'green' }}>
-                    Correct Answer
-                  </div>
+                  <div style={{ fontSize: '12px', color: 'green' }}>Correct Answer</div>
                 )}
               </div>
             );
@@ -150,27 +148,40 @@ const TestPlatform = () => {
         )}
       </div>
 
+      {/* Buttons */}
       <div className="nav-buttons">
-        {!submitted && currentQuestion > 0 && (
+        {currentQuestion !== 0 && (
           <button onClick={handlePrev}>Previous</button>
-        )}
-        {!submitted && currentQuestion < questions.length - 1 && (
-          <button onClick={handleNext}>Next</button>
-        )}
-        {!submitted && currentQuestion === questions.length - 1 && (
-          <button className="submit-btn" onClick={handleSubmit}>Submit Test</button>
         )}
 
-        {submitted && currentQuestion > 0 && (
-          <button onClick={handlePrev}>Previous</button>
-        )}
-        {submitted && currentQuestion < questions.length - 1 && (
-          <button onClick={handleNext}>Next</button>
+        {(!submitted && currentQuestion === questions.length - 1) ? (
+          <button className="submit-btn" onClick={handleSubmit}>Submit Test</button>
+        ) : (
+          currentQuestion !== questions.length - 1 && (
+            <button onClick={handleNext}>Next</button>
+          )
         )}
       </div>
 
+      {/* Show unattempted summary and back button */}
       {submitted && (
-        <button className="back-btn" onClick={handleBackToTests}>← Back to Test Selection</button>
+        <>
+          <div className="unattempted">
+            <h3>Unattempted Questions:</h3>
+            <ul>
+              {questions.map((q, i) =>
+                !(i in answers) ? <li key={i}>Question {i + 1}</li> : null
+              )}
+            </ul>
+          </div>
+          <button className="back-btn" onClick={() => {
+            setSelectedTest(null);
+            setSubmitted(false);
+            setAnswers({});
+            setTimer(600);
+            setCurrentQuestion(0);
+          }}>← Back</button>
+        </>
       )}
     </div>
   );
