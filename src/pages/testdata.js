@@ -58,16 +58,14 @@ const testData = {
   SST: {
     "Test 1": [
       {
-        question: `
-Match the individuals with their most likely development goals:
+        question: `Match the individuals with their most likely development goals:
 
-| Person                         | Development Goal                        |
-|-------------------------------|------------------------------------------|
-| A. A rural landless labourer  | 4. More days of work and better wages    |
-| B. An industrialist           | 2. Higher profits and business growth    |
-| C. A girl from a village      | 3. Freedom and access to education       |
-| D. An urban unemployed youth  | 1. Better job opportunities in cities    |
-`,
+| Person                    | Development Goal                         |
+|---------------------------|------------------------------------------|
+| A. A rural landless labourer | 4. More days of work and better wages |
+| B. An industrialist         | 2. Higher profits and business growth  |
+| C. A girl from a village    | 3. Freedom and access to education     |
+| D. An urban unemployed youth | 1. Better job opportunities in cities |`,
         options: ["A", "B", "C", "D"],
         correctAnswer: 3,
         explanation: "",
