@@ -105,7 +105,7 @@ const TestPlatform = () => {
 
         {current.markdown ? (
           <div className="markdown-question">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{current.question}</ReactMarkdown>
+            <ReactMarkdown>{current.question}</ReactMarkdown>
           </div>
         ) : (
           <h2>{current.question}</h2>
@@ -152,7 +152,6 @@ const TestPlatform = () => {
         {currentQuestion === questions.length - 1 && !submitted && (
           <button className="submit-btn" onClick={handleSubmit}>Submit Test</button>
         )}
-        {/* Show Next/Prev even after submission */}
       </div>
     </div>
   );
