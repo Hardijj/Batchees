@@ -48,6 +48,7 @@ const TestPlatform = () => {
 
   const handleSubmit = () => {
     setSubmitted(true);
+    setCurrentQuestion(0); // Reset to first question
   };
 
   if (!selectedSubject) {
@@ -85,7 +86,7 @@ const TestPlatform = () => {
   const current = questions[currentQuestion];
 
   const score = questions.reduce((acc, q, i) => {
-    return acc + (answers[i] === q.correctAnswer ? 1 : 0);
+    return acc + (answers[i] === (q.correctAnswer - 1) ? 1 : 0);
   }, 0);
 
   return (
@@ -99,13 +100,13 @@ const TestPlatform = () => {
         <div className="question-header">
           Question {currentQuestion + 1} / {questions.length}
         </div>
-        <h2 className="question">{current.question}</h2>
+        <h2 className="question" style={{ fontSize: '18px' }}>{current.question}</h2>
 
         <div className="options">
           {current.options.map((option, index) => {
             const isSelected = answers[currentQuestion] === index;
-            const isCorrect = submitted && index === current.correctAnswer;
-            const isWrong = submitted && isSelected && index !== current.correctAnswer;
+            const isCorrect = submitted && index === (current.correctAnswer - 1);
+            const isWrong = submitted && isSelected && index !== (current.correctAnswer - 1);
 
             return (
               <div
@@ -114,6 +115,16 @@ const TestPlatform = () => {
                 onClick={() => handleOptionClick(index)}
               >
                 {option}
+                {submitted && isSelected && (
+                  <div style={{ fontSize: '12px', color: '#555' }}>
+                    Your Answer
+                  </div>
+                )}
+                {submitted && index === (current.correctAnswer - 1) && (
+                  <div style={{ fontSize: '12px', color: 'green' }}>
+                    Correct Answer
+                  </div>
+                )}
               </div>
             );
           })}
