@@ -133,9 +133,6 @@ const TestPlatform = () => {
                 {submitted && isSelected && (
                   <div style={{ fontSize: '12px', color: '#555' }}>Your Answer</div>
                 )}
-                {submitted && index === (current.correctAnswer - 1) && (
-                  <div style={{ fontSize: '12px', color: 'green' }}>Correct Answer</div>
-                )}
               </div>
             );
           })}
@@ -148,29 +145,32 @@ const TestPlatform = () => {
         )}
       </div>
 
-      {/* Buttons */}
-      <div className="nav-buttons">
-        {currentQuestion !== 0 && (
-          <button onClick={handlePrev}>Previous</button>
-        )}
-
-        {(!submitted && currentQuestion === questions.length - 1) ? (
-          <button className="submit-btn" onClick={handleSubmit}>Submit Test</button>
-        ) : (
-          currentQuestion !== questions.length - 1 && (
-            <button onClick={handleNext}>Next</button>
-          )
-        )}
+      {/* Navigation Buttons */}
+      <div className="nav-buttons" style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div>
+          {currentQuestion !== 0 && (
+            <button onClick={handlePrev}>Previous</button>
+          )}
+        </div>
+        <div>
+          {(!submitted && currentQuestion === questions.length - 1) ? (
+            <button className="submit-btn" onClick={handleSubmit}>Submit Test</button>
+          ) : (
+            currentQuestion !== questions.length - 1 && (
+              <button onClick={handleNext}>Next</button>
+            )
+          )}
+        </div>
       </div>
 
-      {/* Show unattempted summary and back button */}
+      {/* Unattempted and Back */}
       {submitted && (
         <>
           <div className="unattempted">
             <h3>Unattempted Questions:</h3>
             <ul>
-              {questions.map((q, i) =>
-                !(i in answers) ? <li key={i}>Question {i + 1}</li> : null
+              {questions.map((_, i) =>
+                answers[i] === undefined ? <li key={i}>Question {i + 1}</li> : null
               )}
             </ul>
           </div>
