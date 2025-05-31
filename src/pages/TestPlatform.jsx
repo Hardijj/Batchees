@@ -1,67 +1,66 @@
-import React, { useState, useEffect } from "react";
-import { testData } from "./testdata";
+import React, { useState, useEffect } from 'react';
+import testData from './testdata';
 import "../styles/styles.css";
 
-export default function App() {
-  const [subject, setSubject] = useState(null);
-  const [testName, setTestName] = useState(null);
-  const [stage, setStage] = useState("select"); // select or test
-
-  const [current, setCurrent] = useState(0);
-  const [selected, setSelected] = useState([]);
-  const [submitted, setSubmitted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(60); // change to your time
-
-  const startTest = (subject, test) => {
-    setSubject(subject);
-    setTestName(test);
-    setStage("test");
-    setCurrent(0);
-    setSubmitted(false);
-    setSelected(Array(testData[subject][test].length).fill(null));
-    setTimeLeft(60); // customize per test
-  };
+const TestPlatform = () => {
+  const [selectedSubject, setSelectedSubject] = useState(null);
+  const [selectedTest, setSelectedTest] = useState(null);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [timer, setTimer] = useState(600); // default 10 mins
 
   useEffect(() => {
-    if (stage === "test" && !submitted && timeLeft > 0) {
-      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
-      return () => clearTimeout(timer);
+    let interval;
+    if (selectedTest) {
+      interval = setInterval(() => {
+        setTimer(prev => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
     }
-    if (timeLeft === 0) {
-      setSubmitted(true);
-    }
-  }, [timeLeft, stage, submitted]);
+    return () => clearInterval(interval);
+  }, [selectedTest]);
 
   const handleOptionClick = (index) => {
-    const updated = [...selected];
-    updated[current] = index;
-    setSelected(updated);
+    if (showAnswer) return;
+    setSelectedOption(index);
+    setShowAnswer(true);
   };
 
-  const handleSubmit = () => setSubmitted(true);
-
-  const getScore = () => {
-    const questions = testData[subject][testName];
-    return selected.reduce(
-      (score, ans, idx) =>
-        ans === questions[idx].answer ? score + 1 : score,
-      0
-    );
+  const handleNext = () => {
+    setCurrentQuestion(q => Math.min(q + 1, testData[selectedSubject][selectedTest].length - 1));
+    resetQA();
   };
 
-  if (stage === "select") {
+  const handlePrev = () => {
+    setCurrentQuestion(q => Math.max(q - 1, 0));
+    resetQA();
+  };
+
+  const resetQA = () => {
+    setSelectedOption(null);
+    setShowAnswer(false);
+  };
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  if (!selectedSubject) {
     return (
-      <div className="page">
-        <h1>Select Subject & Test</h1>
-        <div className="subjects">
-          {Object.keys(testData).map((sub) => (
-            <div key={sub} className="card">
-              <h2>{sub}</h2>
-              {Object.keys(testData[sub]).map((test) => (
-                <button key={test} onClick={() => startTest(sub, test)}>
-                  {test}
-                </button>
-              ))}
+      <div className="container">
+        <h1 className="heading">Choose a Subject</h1>
+        <div className="grid">
+          {Object.keys(testData).map(subject => (
+            <div key={subject} className="card" onClick={() => setSelectedSubject(subject)}>
+              {subject}
             </div>
           ))}
         </div>
@@ -69,57 +68,68 @@ export default function App() {
     );
   }
 
-  // TEST PAGE
-  const questions = testData[subject][testName];
-  return (
-    <div className="page">
-      <div className="header">
-        <h2>{testName}</h2>
-        <p>⏱ {timeLeft}s</p>
-      </div>
-
-      {!submitted ? (
-        <div className="question-box">
-          <p className="qtext">{questions[current].question}</p>
-          <div className="options">
-            {questions[current].options.map((opt, idx) => (
-              <button
-                key={idx}
-                onClick={() => handleOptionClick(idx)}
-                className={
-                  selected[current] === idx ? "option active" : "option"
-                }
-              >
-                {opt}
-              </button>
-            ))}
-          </div>
-          <div className="nav">
-            <button onClick={() => setCurrent(current - 1)} disabled={current === 0}>
-              Previous
-            </button>
-            {current < questions.length - 1 ? (
-              <button onClick={() => setCurrent(current + 1)}>Next</button>
-            ) : (
-              <button onClick={handleSubmit}>Submit</button>
-            )}
-          </div>
-        </div>
-      ) : (
-        <div className="result">
-          <h2>✅ Score: {getScore()} / {questions.length}</h2>
-          {questions.map((q, idx) => (
-            <div key={idx} className="review">
-              <p><strong>Q{idx + 1}:</strong> {q.question}</p>
-              <p className={selected[idx] === q.answer ? "correct" : "wrong"}>
-                Your Answer: {q.options[selected[idx]] || "Not Answered"}
-              </p>
-              <p className="correct">Correct: {q.options[q.answer]}</p>
+  if (!selectedTest) {
+    return (
+      <div className="container">
+        <h1 className="heading">{selectedSubject} - Choose a Test</h1>
+        <div className="grid">
+          {Object.keys(testData[selectedSubject]).map(test => (
+            <div key={test} className="card" onClick={() => setSelectedTest(test)}>
+              {test}
             </div>
           ))}
-          <button onClick={() => setStage("select")}>Back to Subjects</button>
+        </div>
+        <button className="back-btn" onClick={() => setSelectedSubject(null)}>← Back</button>
+      </div>
+    );
+  }
+
+  const current = testData[selectedSubject][selectedTest][currentQuestion];
+
+  return (
+    <div className="test-container">
+      <div className="top-bar">
+        <div>{selectedSubject} / {selectedTest}</div>
+        <div>⏱ {formatTime(timer)}</div>
+        <div>Q{currentQuestion + 1}/{testData[selectedSubject][selectedTest].length}</div>
+      </div>
+
+      <h2 className="question">{current.question}</h2>
+
+      <div className="options">
+        {current.options.map((opt, i) => {
+          let className = "option";
+          if (showAnswer) {
+            if (i === current.correctAnswer) className += " correct";
+            else if (i === selectedOption) className += " wrong";
+          } else if (i === selectedOption) {
+            className += " selected";
+          }
+
+          return (
+            <div
+              key={i}
+              className={className}
+              onClick={() => handleOptionClick(i)}
+            >
+              {opt}
+            </div>
+          );
+        })}
+      </div>
+
+      {showAnswer && (
+        <div className="explanation">
+          <strong>Explanation:</strong> {current.explanation}
         </div>
       )}
+
+      <div className="nav-buttons">
+        <button onClick={handlePrev} disabled={currentQuestion === 0}>← Previous</button>
+        <button onClick={handleNext} disabled={currentQuestion === testData[selectedSubject][selectedTest].length - 1}>Next →</button>
+      </div>
     </div>
   );
-                      }
+};
+
+export default TestPlatform;
