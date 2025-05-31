@@ -52,9 +52,19 @@ const testData = {
         options: ["100°C", "0°C", "50°C", "200°C"],
         correctAnswer: 0,
         explanation: "Water boils at 100°C at standard pressure."
-      }
-    ]
-  }
+      },
+    ],
+  },
+  SST: {
+    "Test 1": [
+      {
+        question: "Match the individuals with their most likely development goals.Choose the correct matching option. Person(A) Development Goal. A. A rural landless laborer . 1. Better job opportunities in cities. B. An industrialist. 2. Higher profits and business growth .C. A girl from a conservative village. 3. Freedom and access to education. D. An urban unemployed youth. 4. More days of work and better wages",
+        options: ["A", "B", "C", "D"],
+        correctAnswer: 3,
+        explanation: ""
+      },
+    ],
+  },
 };
 
 export default testData;
