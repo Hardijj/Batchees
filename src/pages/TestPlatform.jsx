@@ -100,7 +100,9 @@ const TestPlatform = () => {
         <div className="question-header">
           Question {currentQuestion + 1} / {questions.length}
         </div>
-        <h2 className="question" style={{ fontSize: '18px' }}>{current.question}</h2>
+        <pre className="question" style={{ fontSize: '16px' }}>
+  {current.question}
+</pre>
 
         <div className="options">
           {current.options.map((option, index) => {
