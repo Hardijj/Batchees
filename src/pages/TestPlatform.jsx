@@ -48,7 +48,14 @@ const TestPlatform = () => {
 
   const handleSubmit = () => {
     setSubmitted(true);
-    setCurrentQuestion(0); // Reset to first question
+    setCurrentQuestion(0);
+  };
+
+  const handleBackToTests = () => {
+    setSubmitted(false);
+    setSelectedTest(null);
+    setAnswers({});
+    setTimer(600);
   };
 
   if (!selectedSubject) {
@@ -100,9 +107,13 @@ const TestPlatform = () => {
         <div className="question-header">
           Question {currentQuestion + 1} / {questions.length}
         </div>
-        <h2 className="question" style={{ fontSize: '18px' }}>
-  {current.question}
-</h2>
+        {typeof current.question === 'string' ? (
+  <h2 className="question">{current.question}</h2>
+) : (
+  <pre className="question" style={{ fontSize: '16px' }}>
+    {current.question}
+  </pre>
+)}
 
         <div className="options">
           {current.options.map((option, index) => {
@@ -140,12 +151,26 @@ const TestPlatform = () => {
       </div>
 
       <div className="nav-buttons">
-        <button onClick={handlePrev} disabled={currentQuestion === 0}>Previous</button>
-        <button onClick={handleNext} disabled={currentQuestion === questions.length - 1}>Next</button>
+        {!submitted && currentQuestion > 0 && (
+          <button onClick={handlePrev}>Previous</button>
+        )}
+        {!submitted && currentQuestion < questions.length - 1 && (
+          <button onClick={handleNext}>Next</button>
+        )}
+        {!submitted && currentQuestion === questions.length - 1 && (
+          <button className="submit-btn" onClick={handleSubmit}>Submit Test</button>
+        )}
+
+        {submitted && currentQuestion > 0 && (
+          <button onClick={handlePrev}>Previous</button>
+        )}
+        {submitted && currentQuestion < questions.length - 1 && (
+          <button onClick={handleNext}>Next</button>
+        )}
       </div>
 
-      {!submitted && currentQuestion === questions.length - 1 && (
-        <button className="submit-btn" onClick={handleSubmit}>Submit Test</button>
+      {submitted && (
+        <button className="back-btn" onClick={handleBackToTests}>← Back to Test Selection</button>
       )}
     </div>
   );
