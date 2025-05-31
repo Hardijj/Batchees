@@ -5,18 +5,19 @@ import "../styles/styles.css";
 const TestPlatform = () => {
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [selectedTest, setSelectedTest] = useState(null);
+  const [answers, setAnswers] = useState({});
+  const [submitted, setSubmitted] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [showAnswer, setShowAnswer] = useState(false);
-  const [timer, setTimer] = useState(600); // default 10 mins
+  const [timer, setTimer] = useState(600);
 
   useEffect(() => {
     let interval;
-    if (selectedTest) {
+    if (selectedTest && !submitted) {
       interval = setInterval(() => {
         setTimer(prev => {
           if (prev <= 1) {
             clearInterval(interval);
+            handleSubmit();
             return 0;
           }
           return prev - 1;
@@ -24,33 +25,29 @@ const TestPlatform = () => {
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [selectedTest]);
+  }, [selectedTest, submitted]);
+
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = (seconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  };
 
   const handleOptionClick = (index) => {
-    if (showAnswer) return;
-    setSelectedOption(index);
-    setShowAnswer(true);
+    if (submitted) return;
+    setAnswers({ ...answers, [currentQuestion]: index });
   };
 
   const handleNext = () => {
-    setCurrentQuestion(q => Math.min(q + 1, testData[selectedSubject][selectedTest].length - 1));
-    resetQA();
+    setCurrentQuestion(q => Math.min(q + 1, questions.length - 1));
   };
 
   const handlePrev = () => {
     setCurrentQuestion(q => Math.max(q - 1, 0));
-    resetQA();
   };
 
-  const resetQA = () => {
-    setSelectedOption(null);
-    setShowAnswer(false);
-  };
-
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  const handleSubmit = () => {
+    setSubmitted(true);
   };
 
   if (!selectedSubject) {
@@ -84,50 +81,55 @@ const TestPlatform = () => {
     );
   }
 
-  const current = testData[selectedSubject][selectedTest][currentQuestion];
+  const questions = testData[selectedSubject][selectedTest];
+  const current = questions[currentQuestion];
 
-  return (
-    <div className="test-container">
-      <div className="top-bar">
-        <div>{selectedSubject} / {selectedTest}</div>
-        <div>⏱ {formatTime(timer)}</div>
-        <div>Q{currentQuestion + 1}/{testData[selectedSubject][selectedTest].length}</div>
+  const score = questions.reduce((acc, q, i) => {
+    return acc + (answers[i] === q.correctAnswer ? 1 :
+                  <div className="top-bar">
+        <div>Time Left: {formatTime(timer)}</div>
+        {submitted && <div>Score: {score}/{questions.length}</div>}
       </div>
 
-      <h2 className="question">{current.question}</h2>
-
-      <div className="options">
-        {current.options.map((opt, i) => {
-          let className = "option";
-          if (showAnswer) {
-            if (i === current.correctAnswer) className += " correct";
-            else if (i === selectedOption) className += " wrong";
-          } else if (i === selectedOption) {
-            className += " selected";
-          }
-
-          return (
-            <div
-              key={i}
-              className={className}
-              onClick={() => handleOptionClick(i)}
-            >
-              {opt}
-            </div>
-          );
-        })}
-      </div>
-
-      {showAnswer && (
-        <div className="explanation">
-          <strong>Explanation:</strong> {current.explanation}
+      <div className="question-box">
+        <div className="question-header">
+          Question {currentQuestion + 1} / {questions.length}
         </div>
-      )}
+        <h2 className="question">{current.question}</h2>
+
+        <div className="options">
+          {current.options.map((option, index) => {
+            const isSelected = answers[currentQuestion] === index;
+            const isCorrect = submitted && index === current.correctAnswer;
+            const isWrong = submitted && isSelected && index !== current.correctAnswer;
+
+            return (
+              <div
+                key={index}
+                className={`option ${isSelected ? 'selected' : ''} ${isCorrect ? 'correct' : ''} ${isWrong ? 'wrong' : ''}`}
+                onClick={() => handleOptionClick(index)}
+              >
+                {option}
+              </div>
+            );
+          })}
+        </div>
+
+        {submitted && (
+          <div className="explanation">
+            <strong>Explanation:</strong> {current.explanation}
+          </div>
+        )}
+      </div>
 
       <div className="nav-buttons">
-        <button onClick={handlePrev} disabled={currentQuestion === 0}>← Previous</button>
-        <button onClick={handleNext} disabled={currentQuestion === testData[selectedSubject][selectedTest].length - 1}>Next →</button>
+        <button onClick={handlePrev} disabled={currentQuestion === 0}>Previous</button>
+        <button onClick={handleNext} disabled={currentQuestion === questions.length - 1}>Next</button>
       </div>
+
+      {!submitted && currentQuestion === questions.length - 1 && (
+        <button className="submit-btn" onClick={handleSubmit}>Submit Test</button>
+      )}
     </div>
   );
 };
