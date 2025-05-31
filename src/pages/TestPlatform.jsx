@@ -40,16 +40,20 @@ const TestPlatform = () => {
   };
 
   const handleNext = () => {
-    setCurrentQuestion(q => Math.min(q + 1, questions.length - 1));
+    if (currentQuestion < questions.length - 1) {
+      setCurrentQuestion(q => q + 1);
+    }
   };
 
   const handlePrev = () => {
-    setCurrentQuestion(q => Math.max(q - 1, 0));
+    if (currentQuestion > 0) {
+      setCurrentQuestion(q => q - 1);
+    }
   };
 
   const handleSubmit = () => {
     setSubmitted(true);
-    setCurrentQuestion(0); // Reset to first question
+    setCurrentQuestion(0); // Optional: reset to first question
   };
 
   if (!selectedSubject) {
@@ -103,13 +107,11 @@ const TestPlatform = () => {
         </div>
 
         {current.markdown ? (
-          <ReactMarkdown className="question" style={{ fontSize: '16px' }}>
-            {current.question}
-          </ReactMarkdown>
+          <div className="markdown-question">
+            <ReactMarkdown>{current.question}</ReactMarkdown>
+          </div>
         ) : (
-          <h2 className="question" style={{ fontSize: '16px' }}>
-            {current.question}
-          </h2>
+          <h2 className="question" style={{ fontSize: '16px' }}>{current.question}</h2>
         )}
 
         <div className="options">
@@ -126,21 +128,17 @@ const TestPlatform = () => {
               >
                 {option}
                 {submitted && isSelected && (
-                  <div style={{ fontSize: '12px', color: '#555' }}>
-                    Your Answer
-                  </div>
+                  <div style={{ fontSize: '12px', color: '#555' }}>Your Answer</div>
                 )}
                 {submitted && index === (current.correctAnswer - 1) && (
-                  <div style={{ fontSize: '12px', color: 'green' }}>
-                    Correct Answer
-                  </div>
+                  <div style={{ fontSize: '12px', color: 'green' }}>Correct Answer</div>
                 )}
               </div>
             );
           })}
         </div>
 
-        {submitted && (
+        {submitted && current.explanation && (
           <div className="explanation">
             <strong>Explanation:</strong> {current.explanation}
           </div>
