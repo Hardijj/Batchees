@@ -1,0 +1,95 @@
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: #0a0a0a;
+  color: #fff;
+}
+h1, h2 {
+  font-family: 'Poppins', sans-serif;
+}
+.page {
+  padding: 2rem;
+}
+.subjects {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+.card {
+  background: #222;
+  padding: 1rem;
+  border-radius: 12px;
+  min-width: 200px;
+}
+.card button {
+  margin-top: 8px;
+  background: #444;
+  border: none;
+  padding: 10px 20px;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.card button:hover {
+  background: #666;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.question-box {
+  background: #1b1b1b;
+  padding: 1rem;
+  border-radius: 10px;
+}
+.qtext {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.option {
+  background: #333;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+}
+.option:hover {
+  background: #555;
+}
+.option.active {
+  background: #6c2bd9;
+}
+.nav {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+}
+.nav button {
+  padding: 10px 20px;
+  border: none;
+  background: #444;
+  color: white;
+  border-radius: 6px;
+}
+.result {
+  padding: 1rem;
+}
+.review {
+  background: #2a2a2a;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+}
+.correct {
+  color: #4ef04e;
+}
+.wrong {
+  color: #ff6a6a;
+}
