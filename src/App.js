@@ -14,7 +14,7 @@ import ChapterLectures11 from "./pages/ChapterLectures11";
 import VideoPlayer from "./pages/VideoPlayer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import VideoPlayer2 from "./pages/VideoPlayer2"; // Adjust path as needed
-import MathsPage from "./pages/MathsPage";
+import SubjectsPage from "./pages/MathsPage";
 import LecturesPage from './pages/LecturePage';
 import TestPlatform from './pages/TestPlatform';
 
@@ -50,7 +50,7 @@ function App() {
         <Route path="/video/11/:subject/:chapterIndex" element={<ProtectedRoute><VideoPlayer /></ProtectedRoute>} />
         <Route path="/video2/10/:subject/:chapterIndex" element={<VideoPlayer2 />} />
 
-        <Route path="/maths" element={<MathsPage />} />
+        <Route path="/maths" element={<SubjectsPage />} />
 
         {/* Video Player - Live */}
      <Route path="/video/9/live" element={<ProtectedRoute><VideoPlayer /></ProtectedRoute>} />
