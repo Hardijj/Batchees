@@ -1,18 +1,9 @@
 import React, { useEffect, useState } from "react";
 
-const SubjectsPage = () => {
+const LectureList = () => {
   const [lectures, setLectures] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const formatDate = (isoString) => {
-    const date = new Date(isoString);
-    return date.toLocaleDateString("en-IN", {
-      year: "numeric",
-      month: "short",
-      day: "numeric"
-    });
-  };
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchLectures = async () => {
@@ -22,11 +13,10 @@ const SubjectsPage = () => {
         );
         const data = await response.json();
 
-        // Replace `data.lectures` with the actual key containing the video array
-        if (data && Array.isArray(data.lectures)) {
-          setLectures(data.lectures);
+        if (Array.isArray(data)) {
+          setLectures(data);
         } else {
-          setError("No lectures found.");
+          setError("Invalid response format.");
         }
       } catch (err) {
         setError("Failed to fetch lectures: " + err.message);
@@ -39,46 +29,44 @@ const SubjectsPage = () => {
   }, []);
 
   return (
-    <div style={{ padding: "2rem", fontFamily: "Arial" }}>
+    <div style={{ padding: "20px", fontFamily: "sans-serif" }}>
       <h1>Lectures</h1>
 
       {loading && <p>Loading lectures...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
 
-      <div style={{ display: "grid", gap: "1rem", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))" }}>
+      {lectures.length === 0 && !loading && !error && (
+        <p>No lectures found.</p>
+      )}
+
+      <div style={{ display: "grid", gap: "20px" }}>
         {lectures.map((lecture) => (
           <div
             key={lecture.video_id}
             style={{
               border: "1px solid #ccc",
+              padding: "16px",
               borderRadius: "8px",
-              overflow: "hidden",
-              boxShadow: "0 2px 5px rgba(0,0,0,0.1)"
+              display: "flex",
+              gap: "16px",
+              alignItems: "flex-start",
+              background: "#f9f9f9",
             }}
           >
             <img
               src={lecture.video_poster}
-              alt="Poster"
-              style={{ width: "100%", height: "180px", objectFit: "cover" }}
+              alt={lecture.video_title}
+              style={{ width: "180px", borderRadius: "8px" }}
             />
-            <div style={{ padding: "1rem" }}>
-              <h3 style={{ fontSize: "1rem", margin: "0 0 0.5rem" }}>{lecture.video_title}</h3>
-              <p style={{ margin: "0.25rem 0" }}>🕒 Duration: {lecture.duration}</p>
-              <p style={{ margin: "0.25rem 0" }}>📅 Uploaded: {formatDate(lecture.upload_date)}</p>
-              <a
-                href={`https://example.com/play?video=${lecture.video_id}`}
-                style={{
-                  marginTop: "0.5rem",
-                  display: "inline-block",
-                  background: "#007bff",
-                  color: "#fff",
-                  padding: "0.5rem 1rem",
-                  borderRadius: "4px",
-                  textDecoration: "none"
-                }}
-              >
-                Watch Now
-              </a>
+            <div>
+              <h3 style={{ margin: "0 0 8px 0" }}>{lecture.video_title}</h3>
+              <p style={{ margin: "4px 0" }}>
+                <strong>Upload Date:</strong>{" "}
+                {new Date(lecture.upload_date).toLocaleDateString()}
+              </p>
+              <p style={{ margin: "4px 0" }}>
+                <strong>Duration:</strong> {lecture.duration}
+              </p>
             </div>
           </div>
         ))}
@@ -87,4 +75,4 @@ const SubjectsPage = () => {
   );
 };
 
-export default SubjectsPage;
+export default LectureList;
