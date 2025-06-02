@@ -90,18 +90,34 @@ const TestPlatform = () => {
   }, 0);
 
   const renderQuestion = () => {
-    if (typeof current.question === 'string' && current.question.includes("|")) {
-      return (
-        <pre className="question" style={{ fontSize: '16px', whiteSpace: 'pre-wrap' }}>
+  const isPre = typeof current.question === 'string' && current.question.includes("|");
+  const isNormal = typeof current.question === 'string';
+
+  if (isPre) {
+    return (
+      <div style={{
+        overflowX: 'auto',
+        maxWidth: '100%',
+        marginBottom: '1rem'
+      }}>
+        <pre style={{
+          whiteSpace: 'pre-wrap',
+          fontSize: '15px',
+          border: 'none',
+          background: 'none',
+          padding: '0',
+          margin: '0'
+        }}>
           {current.question}
         </pre>
-      );
-    } else if (typeof current.question === 'string') {
-      return <h2 className="question">{current.question}</h2>;
-    } else {
-      return <div className="question">{current.question}</div>;
-    }
-  };
+      </div>
+    );
+  } else if (isNormal) {
+    return <h2 className="question">{current.question}</h2>;
+  } else {
+    return <div className="question">{current.question}</div>;
+  }
+};
 
   return (
     <div className="container">
