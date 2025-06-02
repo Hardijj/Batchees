@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import testData from './testdata';
-import ReactMarkdown from 'react-markdown';
 import "../styles/styles.css";
 
 const TestPlatform = () => {
@@ -90,22 +89,20 @@ const TestPlatform = () => {
     return acc + (answers[i] === (q.correctAnswer - 1) ? 1 : 0);
   }, 0);
 
-const renderQuestion = (questionData) => {
-  if (!questionData || !questionData.question) return null;
+  const renderQuestion = () => {
+    if (typeof current.question === 'string' && current.question.includes("|")) {
+      return (
+        <pre className="question" style={{ fontSize: '16px', whiteSpace: 'pre-wrap' }}>
+          {current.question}
+        </pre>
+      );
+    } else if (typeof current.question === 'string') {
+      return <h2 className="question">{current.question}</h2>;
+    } else {
+      return <div className="question">{current.question}</div>;
+    }
+  };
 
-  return (
-    <div className="markdown-question">
-      {questionData.markdown ? (
-        <ReactMarkdown>
-          {questionData.question}
-        </ReactMarkdown>
-      ) : (
-        <h2>{questionData.question}</h2>
-      )}
-    </div>
-  );
-};
-  
   return (
     <div className="container">
       <div className="top-bar">
