@@ -90,10 +90,20 @@ const TestPlatform = () => {
     return acc + (answers[i] === (q.correctAnswer - 1) ? 1 : 0);
   }, 0);
 
-  const renderQuestion = () => {
-  <div className="markdown-question">
-  <ReactMarkdown>{current.question}</ReactMarkdown>
-</div>
+const renderQuestion = (questionData) => {
+  if (!questionData || !questionData.question) return null;
+
+  return (
+    <div className="markdown-question">
+      {questionData.markdown ? (
+        <ReactMarkdown>
+          {questionData.question}
+        </ReactMarkdown>
+      ) : (
+        <h2>{questionData.question}</h2>
+      )}
+    </div>
+  );
 };
   
   return (
