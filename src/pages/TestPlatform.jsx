@@ -95,22 +95,16 @@ const TestPlatform = () => {
 
   if (isPre) {
     return (
-      <div style={{
-        overflowX: 'auto',
-        maxWidth: '100%',
-        marginBottom: '1rem'
+      <pre style={{
+        fontSize: '15px',
+        border: 'none',
+        background: 'none',
+        padding: '0',
+        margin: '0',
+        whiteSpace: 'pre-wrap'
       }}>
-        <pre style={{
-          whiteSpace: 'pre-wrap',
-          fontSize: '15px',
-          border: 'none',
-          background: 'none',
-          padding: '0',
-          margin: '0'
-        }}>
-          {current.question}
-        </pre>
-      </div>
+        {current.question}
+      </pre>
     );
   } else if (isNormal) {
     return <h2 className="question">{current.question}</h2>;
@@ -118,7 +112,7 @@ const TestPlatform = () => {
     return <div className="question">{current.question}</div>;
   }
 };
-
+  
   return (
     <div className="container">
       <div className="top-bar">
