@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import testData from './testdata';
+import ReactMarkdown from 'react-markdown';
 import "../styles/styles.css";
 
 const TestPlatform = () => {
@@ -90,27 +91,9 @@ const TestPlatform = () => {
   }, 0);
 
   const renderQuestion = () => {
-  const isPre = typeof current.question === 'string' && current.question.includes("|");
-  const isNormal = typeof current.question === 'string';
-
-  if (isPre) {
-    return (
-      <pre style={{
-        fontSize: '15px',
-        border: 'none',
-        background: 'none',
-        padding: '0',
-        margin: '0',
-        whiteSpace: 'pre-wrap'
-      }}>
-        {current.question}
-      </pre>
-    );
-  } else if (isNormal) {
-    return <h2 className="question">{current.question}</h2>;
-  } else {
-    return <div className="question">{current.question}</div>;
-  }
+  <div className="markdown-question">
+  <ReactMarkdown>{current.question}</ReactMarkdown>
+</div>
 };
   
   return (
