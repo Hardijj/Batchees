@@ -89,19 +89,19 @@ const TestPlatform = () => {
     return acc + (answers[i] === (q.correctAnswer - 1) ? 1 : 0);
   }, 0);
 
-  const renderQuestion = () => {
-    if (typeof current.question === 'string' && current.question.includes("|")) {
-      return (
-        <pre className="question" style={{ fontSize: '16px', whiteSpace: 'pre-wrap' }}>
-          {current.question}
-        </pre>
-      );
-    } else if (typeof current.question === 'string') {
-      return <h2 className="question">{current.question}</h2>;
-    } else {
-      return <div className="question">{current.question}</div>;
-    }
-  };
+  const renderQuestion = (questionObj) => {
+  if (questionObj.pre) {
+    return (
+      <pre style={{ whiteSpace: 'pre-wrap', overflowX: 'auto', border: 'none', background: 'none' }}>
+        {questionObj.question}
+      </pre>
+    );
+  } else {
+    return (
+      <h2 style={{ fontSize: '18px' }}>{questionObj.question}</h2>
+    );
+  }
+};
 
   return (
     <div className="container">
