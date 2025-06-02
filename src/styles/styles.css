@@ -127,19 +127,6 @@ body {
   background-color: #444;
   }
 
-.markdown-question table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 10px 0;
-}
-
-.markdown-question th,
-.markdown-question td {
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: left;
-}
-
 .nav-buttons {
   margin-top: 20px;
   display: flex;
@@ -167,3 +154,39 @@ body {
   width: 100%;
   font-size: 1rem;
 }
+.markdown-question {
+  font-size: 16px;
+  line-height: 1.6;
+  padding: 0;
+  background: none;
+  border: none;
+  box-shadow: none;
+  overflow-x: auto;
+  white-space: normal;
+}
+
+.markdown-question h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.markdown-question table {
+  border-collapse: collapse;
+  margin: 1em 0;
+  width: 100%;
+}
+
+.markdown-question th,
+.markdown-question td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
+  font-family: inherit;
+}
+
+.markdown-question pre {
+  background: none;
+  padding: 0;
+  overflow-x: auto;
+  }
