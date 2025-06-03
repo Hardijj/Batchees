@@ -48,10 +48,88 @@ const testData = {
   Science: {
     "Test 1": [
       {
-        question: "Water boils at what temperature?",
+        question: "In electrolysis of water, the volume of gas collected at cathode is:",
         options: ["100°C", "0°C", "50°C", "200°C"],
         correctAnswer: 0,
         explanation: "Water boils at 100°C at standard pressure."
+      },
+      {
+        question: "What are the gases collected at cathode and anode during electrolysis of water?",
+        options: ["", "", "", ""],
+        correctAnswer: 3,
+        explanation: ""
+      },
+      {
+        question: "A colourless gas ‘A’ with a pungent smell is released when a pale green compound ‘B’ is heated. ‘A’ turns moist red litmus paper blue.  Identify A and B.",
+        options: ["", "", "", ""],
+        correctAnswer: 3,
+        explanation: ""
+      },
+      {
+        question: "Reaction of CaO with H₂O is an example of:",
+        options: ["", "", "", ""],
+        correctAnswer: 3,
+        explanation: ""
+      },
+      {
+        question: "Silver chloride when exposed to sunlight turns:",
+        options: ["", "", "", ""],
+        correctAnswer: 3,
+        explanation: ""
+      },
+      {
+        question: "Heating of lead nitrate produces:",
+        options: ["", "", "", ""],
+        correctAnswer: 3,
+        explanation: ""
+      },
+      {
+        question: "A metal X when heated in air forms an oxide Y. Y reacts with hydrochloric acid to give a salt and water. X and Y are:",
+        options: ["", "", "", ""],
+        correctAnswer: 3,
+        explanation: ""
+      },
+      {
+        question: "A compound 'X' is used in whitewashing. It reacts with water to form 'Y'. Identify X and Y:",
+        options: ["", "", "", ""],
+        correctAnswer: 3,
+        explanation: ""
+      },
+      {
+        question: "In the reaction MnO₂ + 4HCl → MnCl₂ + Cl₂ + 2H₂O, the reducing agent is:",
+        options: ["", "", "", ""],
+        correctAnswer: 3,
+        explanation: ""
+      },
+      {
+        question: "Which of the following is both an oxidation and reduction reaction?",
+        options: ["", "", "", ""],
+        correctAnswer: 3,
+        explanation: ""
+      },
+      {
+        question: "Respiration is:",
+        options: ["", "", "", ""],
+        correctAnswer: 3,
+        explanation: ""
+      },
+      {
+        question: "When magnesium ribbon burns in oxygen, the product formed is:",
+        options: ["", "", "", ""],
+        correctAnswer: 3,
+        explanation: ""
+      },
+      {
+        question: "A blue-coloured compound 'A' is heated strongly in a test tube. A black solid 'B' and a colourless gas 'C' are formed. The gas turns lime water milky.  Identify A, B, and C.",
+        options: ["", "", "", ""],
+        correctAnswer: 3,
+        explanation: ""
+      },
+      {
+        question: "A silvery metal 'A' reacts with a blue solution 'B' to give a colourless solution 'C' and reddish-brown metal 'D'. Identify A, B, C, and D.",
+        options: ["", "", "", ""],
+        correctAnswer: 3,
+        explanation: ""
       },
     ],
   },
