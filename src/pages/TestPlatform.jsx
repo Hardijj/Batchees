@@ -89,20 +89,32 @@ const TestPlatform = () => {
     return acc + (answers[i] === (q.correctAnswer - 1) ? 1 : 0);
   }, 0);
 
-  const renderQuestion = (questionObj) => {
-  if (questionObj.pre) {
-    return (
-      <pre style={{ whiteSpace: 'pre-wrap', overflowX: 'auto', border: 'none', background: 'none' }}>
-        {questionObj.question}
-      </pre>
-    );
-  } else {
-    return (
-      <h2 style={{ fontSize: '18px' }}>{questionObj.question}</h2>
-    );
-  }
-};
+  const renderQuestions = () => {
+  const current = questions[currentQuestion];
 
+  return (
+    <div>
+      {current.usePre ? (
+        <pre style={{
+          whiteSpace: 'pre-wrap',
+          overflowX: 'auto',
+          background: 'none',
+          border: 'none',
+          padding: 0,
+          fontSize: '16px',
+          marginBottom: '1rem'
+        }}>
+          {current.question}
+        </pre>
+      ) : (
+        <h2 style={{ fontSize: '20px', marginBottom: '1rem' }}>
+          {current.question}
+        </h2>
+      )}
+    </div>
+  );
+};
+  
   return (
     <div className="container">
       <div className="top-bar">
