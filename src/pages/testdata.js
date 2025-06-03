@@ -49,86 +49,86 @@ const testData = {
     "Test 1": [
       {
         question: "In electrolysis of water, the volume of gas collected at cathode is:",
-        options: ["100°C", "0°C", "50°C", "200°C"],
-        correctAnswer: 0,
-        explanation: "Water boils at 100°C at standard pressure."
+        options: ["Half of that at anode", "Double of that at anode", "Same as anode", "None"],
+        correctAnswer: 2,
+        explanation: ""
       },
       {
         question: "What are the gases collected at cathode and anode during electrolysis of water?",
-        options: ["", "", "", ""],
-        correctAnswer: 3,
+        options: ["Hydrogen at anode, Oxygen at cathode", "Oxygen at anode, Hydrogen at cathode", "Nitrogen at anode, Oxygen at cathode", "Hydrogen at both electrodes"],
+        correctAnswer: 2,
         explanation: ""
       },
       {
         question: "A colourless gas ‘A’ with a pungent smell is released when a pale green compound ‘B’ is heated. ‘A’ turns moist red litmus paper blue.  Identify A and B.",
-        options: ["", "", "", ""],
-        correctAnswer: 3,
+        options: ["A = Cl₂, B = CuCO₃", "A = NH₃, B = (NH₄)₂CO₃", "A = SO₂, B = FeSO₄", "A = H₂S, B = PbS"],
+        correctAnswer: 2,
         explanation: ""
       },
       {
         question: "Reaction of CaO with H₂O is an example of:",
-        options: ["", "", "", ""],
+        options: ["Redox reaction", "Displacement reaction", "Combination and Exothermic reaction", "Decomposition reaction"],
         correctAnswer: 3,
         explanation: ""
       },
       {
         question: "Silver chloride when exposed to sunlight turns:",
-        options: ["", "", "", ""],
-        correctAnswer: 3,
+        options: ["Green", "Grey", "Brown", "Yellow"],
+        correctAnswer: 2,
         explanation: ""
       },
       {
         question: "Heating of lead nitrate produces:",
-        options: ["", "", "", ""],
-        correctAnswer: 3,
+        options: ["Brown fumes and yellow residue", "Brown fumes and white residue", "White fumes and black residue", "Yellow gas and brown residue"],
+        correctAnswer: 1,
         explanation: ""
       },
       {
         question: "A metal X when heated in air forms an oxide Y. Y reacts with hydrochloric acid to give a salt and water. X and Y are:",
-        options: ["", "", "", ""],
-        correctAnswer: 3,
+        options: ["Cu and CuO", "Na and Na₂O", "Fe and Fe₂O₃", "Zn and ZnO"],
+        correctAnswer: 4,
         explanation: ""
       },
       {
         question: "A compound 'X' is used in whitewashing. It reacts with water to form 'Y'. Identify X and Y:",
-        options: ["", "", "", ""],
-        correctAnswer: 3,
+        options: ["X = CaO, Y = Ca(OH)₂", "X = Na₂CO₃, Y = NaOH", "X = Ca(OH)₂, Y = CaCO₃", "X = CaCO₃, Y = CaO"],
+        correctAnswer: 1,
         explanation: ""
       },
       {
         question: "In the reaction MnO₂ + 4HCl → MnCl₂ + Cl₂ + 2H₂O, the reducing agent is:",
-        options: ["", "", "", ""],
-        correctAnswer: 3,
+        options: ["HCl₂", "MnO₂", "MnCl₂", "H₂O"],
+        correctAnswer: 1,
         explanation: ""
       },
       {
         question: "Which of the following is both an oxidation and reduction reaction?",
-        options: ["", "", "", ""],
-        correctAnswer: 3,
+        options: ["CuSO₄ → ZnSO₄ + Cu", "Zn + CuSO₄ → ZnSO₄ + Cu", "AgNO₃+ NaCl → AgCl + NaNO₃", "NaOH + HCI → NaCl + H₂O"],
+        correctAnswer: 2,
         explanation: ""
       },
       {
         question: "Respiration is:",
-        options: ["", "", "", ""],
-        correctAnswer: 3,
+        options: ["Endothermic process", "Exothermic process", "Photochemical process", "Decomposition process"],
+        correctAnswer: 2,
         explanation: ""
       },
       {
         question: "When magnesium ribbon burns in oxygen, the product formed is:",
-        options: ["", "", "", ""],
-        correctAnswer: 3,
+        options: ["Magnesium oxide", "Magnesium nitrate", "Magnesium carbonate", "Magnesium chloride"],
+        correctAnswer: 1,
         explanation: ""
       },
       {
         question: "A blue-coloured compound 'A' is heated strongly in a test tube. A black solid 'B' and a colourless gas 'C' are formed. The gas turns lime water milky.  Identify A, B, and C.",
-        options: ["", "", "", ""],
-        correctAnswer: 3,
+        options: ["A = CuSO₄·5H₂O, B = CuO, C = CO₂", "A = CuCO₃, B = CuO, C = CO₂", "A = Cu(NO₃)₂, B = Cu, C = NO₂", "A = ZnCO₃, B = Zn, C = CO"],
+        correctAnswer: 2,
         explanation: ""
       },
       {
         question: "A silvery metal 'A' reacts with a blue solution 'B' to give a colourless solution 'C' and reddish-brown metal 'D'. Identify A, B, C, and D.",
-        options: ["", "", "", ""],
-        correctAnswer: 3,
+        options: ["A = Zn, B = CuSO, C = ZnSO₄, D = Cu", "A = Fe, B = AgNO₃, C = Fe(NO₂), and D = Ag", "A = Al, B = FeSO₄, C = Al₂(SO₄)₃, D = Fe", "A = Mg, B = ZnSO₄, C = MgSO₄, D = Zn"],
+        correctAnswer: 2,
         explanation: ""
       },
     ],
