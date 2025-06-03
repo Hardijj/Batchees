@@ -69,7 +69,7 @@ const testData = {
         options: ["A", "B", "C", "D"],
         correctAnswer: 3,
         explanation: "",
-        markdown: true
+        usePre: true
       },
     ],
   },
