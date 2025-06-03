@@ -92,18 +92,22 @@ const TestPlatform = () => {
   const renderQuestions = () => {
   const current = questions[currentQuestion];
 
+  if (!current) return null;
+
   return (
     <div>
       {current.usePre ? (
-        <pre style={{
-          whiteSpace: 'pre-wrap',
-          overflowX: 'auto',
-          background: 'none',
-          border: 'none',
-          padding: 0,
-          fontSize: '16px',
-          marginBottom: '1rem'
-        }}>
+        <pre
+          style={{
+            whiteSpace: 'pre-wrap',
+            overflowX: 'auto',
+            background: 'transparent',
+            border: 'none',
+            padding: 0,
+            fontSize: '16px',
+            marginBottom: '1rem',
+          }}
+        >
           {current.question}
         </pre>
       ) : (
