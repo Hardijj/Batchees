@@ -59,13 +59,11 @@ const testData = {
     "Test 1": [
       {
         question: `Match the individuals with their most likely development goals:
-        
-| Person                      | Development Goal                          |
-|----------------------------|-------------------------------------------|
-| A. A rural landless labourer | More days of work and better wages       |
-| B. An industrialist         | Higher profits and business growth       |
-| C. A girl from a village    | Freedom and access to education          |
-| D. An urban unemployed youth | Better job opportunities in cities       |`,
+| Person| Development Goal
+| A. A rural landless labourer | More days of work and better wages
+| B. An industrialist| Higher profits and business growth
+| C. A girl from a village| Freedom and access to education
+| D. An urban unemployed youth | Better job opportunities in cities`,
         options: ["A", "B", "C", "D"],
         correctAnswer: 3,
         explanation: "",
