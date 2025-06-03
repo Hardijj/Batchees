@@ -66,73 +66,73 @@ const testData = {
       {
         question: `Match the individuals with their most likely development goals:
 | Person| Development Goal
-| A. A rural landless labourer | More days of work and better wages
-| B. An industrialist| Higher profits and business growth
-| C. A girl from a village| Freedom and access to education
-| D. An urban unemployed youth | Better job opportunities in cities`,
-        options: ["A", "B", "C", "D"],
-        correctAnswer: 3,
+| A. A rural landless labourer | 1.Better job opportunities in cities
+| B. An industrialist| 2.Higher profits and business growth
+| C. A girl from a village| 3.Freedom and access to education
+| D. An urban unemployed youth | 4. More days of work and better wages`,
+        options: ["A-4, B-2, C-3, D-1", "A-1, B-2, C-4, D-3", "A-2, B-4, C-1, D-3", "A-3, B-1, C-2, D-4"],
+        correctAnswer: 1,
         explanation: "",
         usePre: true
       },
       {
         question: "Which one of the following is the correct meaning of ‘Average Income’?",
-        options: ["", "", "", ""],
-        correctAnswer: 3,
+        options: ["The total income of the country divided by its total population.", "The total income of the country divided by its earning population.", "The total income of all the residents of the country.", "The total income from the domestic and foreign sources."],
+        correctAnswer: 2,
         explanation: ""
       },
       {
         question: "Which of the following is an example of sustainable development?",
-        options: ["", "", "", ""],
-        correctAnswer: 3,
+        options: ["Cutting forests for factories", "Using solar energy", "Mining without control", "Overusing groundwater"],
+        correctAnswer: 2,
         explanation: ""
       },
       {
         question: "According to the World Bank, a country with per capita income of US$ 2400 or less in 2023 is considered:",
-        options: ["", "", "", ""],
+        options: ["Middle-income country", "Developed country", "Low-income country", "Rich country"],
         correctAnswer: 3,
         explanation: ""
       },
       {
         question: "Assertion (A): Per capita income is not the only criterion for measuring development. Reason (R): Other factors like education, health, and public facilities also play an important role.",
-        options: ["", "", "", ""],
-        correctAnswer: 3,
+        options: ["Both A and R are true, and R is the correct explanation of A", "Both A and R are true, but R is not the correct explanation of A", "A is true, R is false", "A is false, R is true"],
+        correctAnswer: 1,
         explanation: ""
       },
       {
         question: "Assertion (A): Sustainable development ensures that resources are used carefully. Reason (R): Non-renewable resources like coal and petroleum are unlimited.",
-        options: ["", "", "", ""],
+        options: ["Both A and R are true, and R is the correct explanation of A", "Both A and R are true, but R is not the correct explanation of A", "A is true, R is false", "A is false, R is true"],
         correctAnswer: 3,
         explanation: ""
       },
       {
         question: "What does a low Infant Mortality Rate (IMR) indicate?",
-        options: ["", "", "", ""],
+        options: ["Poor healthcare services", "High number of child deaths", "Better healthcare and nutrition for infants", "High population growth"],
         correctAnswer: 3,
         explanation: ""
       },
       {
         question: "Assume there are four families in a country. The average per capita income of these families is, ₹10000. If the income of three families is ₹8000, ₹14000 and ₹6000 respectively, what is the income of a fourth family?",
-        options: ["", "", "", ""],
-        correctAnswer: 3,
+        options: ["₹15,000", "₹6,000", "₹4,000", "₹12,000"],
+        correctAnswer: 4,
         explanation: ""
       },
       {
         question: "Which of the following states has the highest literacy rate according to 2018 study reports?",
-        options: ["", "", "", ""],
-        correctAnswer: 3,
-        explanation: ""
+        options: ["Haryana", "Bihar", "Punjab", "Kerela"],
+        correctAnswer: 4,
+        explanation: "Kerela, sir, 100% literacy sir"
       },
       {
         question: "In which of the following states has mining caused severe land degradation?",
-        options: ["", "", "", ""],
-        correctAnswer: 3,
+        options: ["Kerala", "Jharkhand", "Punjab", "Haryana"],
+        correctAnswer: 2,
         explanation: ""
       },
       {
         question: "Which method is most suitable for preventing soil erosion on hill slopes?",
-        options: ["", "", "", ""],
-        correctAnswer: 3,
+        options: ["Strip cropping", "Terrace farming", "Afforestation", "Contour ploughing"],
+        correctAnswer: 2,
         explanation: ""
       },
       {
@@ -140,55 +140,54 @@ const testData = {
 
 Soil Feature   
 A. Black soil            1. Found in high rainfall areas, low humus
-B. Red soil               2. Formed from igneous rocks, retains moisture   
-C. Laterite soil          3. Found in low rainfall areas, poor in nitrogen   
-
-Options:
+B. Red soil               2. Formed from igneous rocks, retains moisture
+C. Laterite soil          3. Found in low rainfall areas, poor in nitrogen
  `,
-        options: ["", "", "", ""],
-        correctAnswer: 3,
-        explanation: ""
+        options: ["A-2, B-3, C-1", "A-1, B-2, C-3", "A-3, B-1, C-2", "A-2, B-1, C-3"],
+        correctAnswer: 1,
+        explanation: "",
+        usePre: true
       },
       {
         question: "What is the classification for land that has been degraded and is unable to support crop cultivation for more than five years?",
-        options: ["", "", "", ""],
+        options: ["Wasteland", "Arid land", "Barren land", "Forest land"],
         correctAnswer: 3,
         explanation: ""
       },
       {
         question: "Which of the following best explains why resource planning is essential in India?",
-        options: ["", "", "", ""],
-        correctAnswer: 3,
+        options: ["Resources are plenty in all regions", "All resources are renewable", "Resources are evenly distributed", "Resources are unevenly distributed and overused"],
+        correctAnswer: 4,
         explanation: ""
       },
       {
         question: "Identify the incorrect statement:",
-        options: ["", "", "", ""],
-        correctAnswer: 3,
+        options: ["Net Sown Area refers to the land sown only once in a year", "In India, net sown area is unevenly distributed among states", "Net Sown Area helps in understanding agricultural intensity", "States with high population density always have high net sown area"],
+        correctAnswer: 4,
         explanation: ""
       },
       {
         question: "Which of the following is a major cause of land degradation in states like Gujarat, Rajasthan, and Madhya Pradesh?",
-        options: ["", "", "", ""],
+        options: ["Deforestation", "Mining", "Overgrazing", "Industrial waste"],
         correctAnswer: 3,
         explanation: ""
       },
       {
         question: "Ploughing along the contour lines to decelerate the flow of water down the slopes is called:",
-        options: ["", "", "", ""],
+        options: ["Strip cropping", "Sheet erosion", "Contour ploughing", "Terrace cultivation"],
         correctAnswer: 3,
         explanation: ""
       },
       {
         question: "What percentage of India’s land is plain?",
-        options: ["", "", "", ""],
+        options: ["30%", "27%", "43%", "50%"],
         correctAnswer: 3,
         explanation: ""
       },
       {
         question: "Which of the following soil are more common in piedmont plains such as Duars, Chos and Terai?",
-        options: ["", "", "", ""],
-        correctAnswer: 3,
+        options: ["Black soil", "Alluvial soil", "Laterite soil", "None of these"],
+        correctAnswer: 2,
         explanation: ""
       },
     ],
