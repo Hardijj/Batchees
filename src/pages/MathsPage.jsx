@@ -1,76 +1,54 @@
 import React, { useEffect, useState } from "react";
 
 const LectureList = () => {
-  const [lectures, setLectures] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [batchData, setBatchData] = useState(null);
+  const [error, setError] = useState(null);
+
+  const accessToken =
+    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3NDk0NzQ5NjcuNTI1LCJkYXRhIjp7Il9pZCI6IjY2NzAxNTcyMjYzM2MwMzNmY2FmYjQ5YSIsInVzZXJuYW1lIjoiOTUxMDUxNTkyMyIsImZpcnN0TmFtZSI6IlZhbnNoIiwib3JnYW5pemF0aW9uIjp7Il9pZCI6IjVlYjM5M2VlOTVmYWI3NDY4YTc5ZDE4OSIsIndlYnNpdGUiOiJwaHlzaWNzd2FsbGFoLmNvbSIsIm5hbWUiOiJQaHlzaWNzd2FsbGFoIn0sImVtYWlsIjoidmFuc2hkZXZpZXJ3YWxhNjdAZ21haWwuY29tIiwicm9sZXMiOlsiNWIyN2JkOTY1ODQyZjk1MGE3NzhjNmVmIl0sImNvdW50cnlHcm91cCI6IklOIiwidHlwZSI6IlVTRVIifSwiaWF0IjoxNzQ4ODcwMTY3fQ.02xDLaTl3votjtQA1e8m6O37dTIQ20suFuQ0JdMbZOs";
 
   useEffect(() => {
-    const fetchLectures = async () => {
-      try {
-        const response = await fetch(
-          "https://streamfiles.eu.org/api/contents.php?topic_slug=light---reflection-and-refraction-013795&type=videos&api_type=new&token=cu7oiBffDQbRGx7%2FOhKylmKZYPBubC4Euenu4PkHPj%2FOyu1vuQDaiYALB5VP7gczBnItWkSGb4ZYiZW6Efbg4FaOZfFRhjDNcPBpTZHHbvPfoU%2Bh7sEY9PRCq23lFIR0aUdsRede44EFSpV0r9LPFUIZtOSDgRF3kyFvp6%2Byzol4pKjtLNTEkl98uN3eQ5Bov7slpn%2BztdOUrMlpzbuZJaF3rJO9oFnzwBf5DQSEFUf%2BR2Y3PTNryrFltXwzG8TQS9YuUoWKNvCI5QRaQg2yhpqIZTeIXisbmJaonmuUQ48I7myj0ktC1BTyDtSFH9bYP%2Ba6cwhcMQLC8BlsaA5mwJ8EzYbzTdgrxXuiVWBPvcEOpNquK6%2FhE%2Fw%2FlHkp%2BWe32w1Qoh4Cu6aWaGywG0mjN7a220OsB5BScr%2F9ihMZ9fsDXS4OjfdxpAA6e7xtmQd9yuMKvygqhomjZZM0bX823QKbAnxQqISxvdmCxu8JLYYMoe6mlmMSpC5ghoomDMm4sNeFA%2Bsv0JrpLwGvGYL%2BlSygaFfZr%2BfFrC%2FT8oXtr7ICImoVEe38GAF29dmUYAQZHjBopGhiegHLqL2BVSD%2FwZc7Af0ybaSZh7EenA4rZIH%2FdYEgt9puDVJLKoMpIywUh8FpzML68EJQmRwyXPR1IbK8XcqokTNsRAMeSso98FQ%3D&subject_id=66068b2057eb78001800ec24&topic_id=67f1486544f0a7c755bd8fa2&batch_id=65df241600f257001881fbbd&subject_slug=physics-593096&content_type=new&encrypt=0"
-        );
-        const data = await response.json();
+    // Set access_token in localStorage
+    localStorage.setItem("access_token", accessToken);
 
-        if (Array.isArray(data)) {
-          setLectures(data);
-        } else {
-          setError("Invalid response format.");
-        }
-      } catch (err) {
-        setError("Failed to fetch lectures: " + err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchLectures();
+    // Fetch batch details using access_token
+    fetch("https://api.penpencil.co/v3/batches/678a0324dab28c8848cc026f/details", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch batch data.");
+        return res.json();
+      })
+      .then((data) => {
+        setBatchData(data);
+      })
+      .catch((err) => {
+        setError(err.message);
+      });
   }, []);
 
+  if (error) return <div>Error: {error}</div>;
+  if (!batchData) return <div>Loading batch data...</div>;
+
   return (
-    <div style={{ padding: "20px", fontFamily: "sans-serif" }}>
-      <h1>Lectures</h1>
+    <div style={{ padding: "1rem", fontFamily: "Arial" }}>
+      <h2>📘 Batch Details</h2>
+      <p><strong>Batch Name:</strong> {batchData.data?.name}</p>
+      <p><strong>Batch Code:</strong> {batchData.data?.batchCode}</p>
+      <p><strong>Course:</strong> {batchData.data?.course?.name}</p>
+      <p><strong>Organization:</strong> {batchData.data?.organization?.name}</p>
+      <p><strong>Status:</strong> {batchData.data?.status}</p>
 
-      {loading && <p>Loading lectures...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-
-      {lectures.length === 0 && !loading && !error && (
-        <p>No lectures found.</p>
-      )}
-
-      <div style={{ display: "grid", gap: "20px" }}>
-        {lectures.map((lecture) => (
-          <div
-            key={lecture.video_id}
-            style={{
-              border: "1px solid #ccc",
-              padding: "16px",
-              borderRadius: "8px",
-              display: "flex",
-              gap: "16px",
-              alignItems: "flex-start",
-              background: "#f9f9f9",
-            }}
-          >
-            <img
-              src={lecture.video_poster}
-              alt={lecture.video_title}
-              style={{ width: "180px", borderRadius: "8px" }}
-            />
-            <div>
-              <h3 style={{ margin: "0 0 8px 0" }}>{lecture.video_title}</h3>
-              <p style={{ margin: "4px 0" }}>
-                <strong>Upload Date:</strong>{" "}
-                {new Date(lecture.upload_date).toLocaleDateString()}
-              </p>
-              <p style={{ margin: "4px 0" }}>
-                <strong>Duration:</strong> {lecture.duration}
-              </p>
-            </div>
-          </div>
+      <h3>📅 Schedule</h3>
+      <ul>
+        {batchData.data?.schedule?.map((item, idx) => (
+          <li key={idx}>
+            <strong>{item?.day}</strong>: {item?.startTime} - {item?.endTime}
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 };
