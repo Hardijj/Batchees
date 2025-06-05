@@ -1,54 +1,50 @@
 import React, { useEffect, useState } from "react";
 
 const LectureList = () => {
-  const [batchData, setBatchData] = useState(null);
+  const [data, setData] = useState(null);
   const [error, setError] = useState(null);
 
-  const accessToken =
-    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3NDk0NzQ5NjcuNTI1LCJkYXRhIjp7Il9pZCI6IjY2NzAxNTcyMjYzM2MwMzNmY2FmYjQ5YSIsInVzZXJuYW1lIjoiOTUxMDUxNTkyMyIsImZpcnN0TmFtZSI6IlZhbnNoIiwib3JnYW5pemF0aW9uIjp7Il9pZCI6IjVlYjM5M2VlOTVmYWI3NDY4YTc5ZDE4OSIsIndlYnNpdGUiOiJwaHlzaWNzd2FsbGFoLmNvbSIsIm5hbWUiOiJQaHlzaWNzd2FsbGFoIn0sImVtYWlsIjoidmFuc2hkZXZpZXJ3YWxhNjdAZ21haWwuY29tIiwicm9sZXMiOlsiNWIyN2JkOTY1ODQyZjk1MGE3NzhjNmVmIl0sImNvdW50cnlHcm91cCI6IklOIiwidHlwZSI6IlVTRVIifSwiaWF0IjoxNzQ4ODcwMTY3fQ.02xDLaTl3votjtQA1e8m6O37dTIQ20suFuQ0JdMbZOs";
+  const apiUrl =
+    "https://api.penpencil.co/v2/batches/678a0324dab28c8848cc026f/subject/physics-254348/contents?page=1&contentType=videos&tag=68302d794ac4942ead2da4e0";
 
   useEffect(() => {
-    // Set access_token in localStorage
-    localStorage.setItem("access_token", accessToken);
+    const token = localStorage.getItem("access_token");
 
-    // Fetch batch details using access_token
-    fetch("https://api.penpencil.co/v3/batches/678a0324dab28c8848cc026f/details", {
+    if (!token) {
+      setError("❌ No access_token found in localStorage.");
+      return;
+    }
+
+    fetch(apiUrl, {
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${token}`,
       },
     })
       .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch batch data.");
+        if (!res.ok) throw new Error("❌ API request failed.");
         return res.json();
       })
-      .then((data) => {
-        setBatchData(data);
+      .then((json) => {
+        if (json.success) {
+          setData(json);
+        } else {
+          setError("⚠️ API returned success: false.");
+        }
       })
       .catch((err) => {
         setError(err.message);
       });
   }, []);
 
-  if (error) return <div>Error: {error}</div>;
-  if (!batchData) return <div>Loading batch data...</div>;
+  if (error) return <pre>{error}</pre>;
+  if (!data) return <p>⏳ Loading content...</p>;
 
   return (
-    <div style={{ padding: "1rem", fontFamily: "Arial" }}>
-      <h2>📘 Batch Details</h2>
-      <p><strong>Batch Name:</strong> {batchData.data?.name}</p>
-      <p><strong>Batch Code:</strong> {batchData.data?.batchCode}</p>
-      <p><strong>Course:</strong> {batchData.data?.course?.name}</p>
-      <p><strong>Organization:</strong> {batchData.data?.organization?.name}</p>
-      <p><strong>Status:</strong> {batchData.data?.status}</p>
-
-      <h3>📅 Schedule</h3>
-      <ul>
-        {batchData.data?.schedule?.map((item, idx) => (
-          <li key={idx}>
-            <strong>{item?.day}</strong>: {item?.startTime} - {item?.endTime}
-          </li>
-        ))}
-      </ul>
+    <div>
+      <h2>✅ Full API Response</h2>
+      <pre style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+        {JSON.stringify(data, null, 2)}
+      </pre>
     </div>
   );
 };
