@@ -28,7 +28,7 @@ const LectureList = () => {
         if (json.success) {
           setData(json);
         } else {
-          setError("⚠️ API returned success: false.");
+          setData(json);
         }
       })
       .catch((err) => {
