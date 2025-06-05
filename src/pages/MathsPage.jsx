@@ -5,7 +5,7 @@ const LectureList = () => {
   const [error, setError] = useState(null);
 
   const apiUrl =
-    "https://appapi.videocrypt.in/data_model/course/get_my_courses";
+    "https://appapi.videocrypt.in/data_model/course_deprecated/get_course_detail";
 
   useEffect(() => {
     const token = localStorage.getItem("jwt");
