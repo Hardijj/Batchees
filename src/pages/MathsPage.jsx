@@ -5,7 +5,7 @@ const LectureList = () => {
   const [error, setError] = useState(null);
 
   const apiUrl =
-    "https://api.penpencil.co/v2/batches/678a0324dab28c8848cc026f/subject/physics-254348/contents?page=1&contentType=videos&tag=68302d794ac4942ead2da4e0";
+    "https://api.penpencil.co/v2/batches/678a0324dab28c8848cc026f/subject/physics-254348/topics?page=1";
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -42,7 +42,7 @@ const LectureList = () => {
   return (
     <div>
       <h2>✅ Full API Response</h2>
-      <pre style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+      <pre>
         {JSON.stringify(data, null, 2)}
       </pre>
     </div>
