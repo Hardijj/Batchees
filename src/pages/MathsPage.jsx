@@ -5,10 +5,10 @@ const LectureList = () => {
   const [error, setError] = useState(null);
 
   const apiUrl =
-    "https://api.penpencil.co/v2/batches/678a0324dab28c8848cc026f/subject/physics-254348/topics?page=1";
+    "https://appapi.videocrypt.in/data_model/course/get_my_courses";
 
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
+    const token = localStorage.getItem("jwt");
 
     if (!token) {
       setError("❌ No access_token found in localStorage.");
