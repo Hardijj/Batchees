@@ -1,55 +1,66 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
-const Subjects = () => {
-  const [subjects, setSubjects] = useState([]);
+const SubjectChapters = () => {
+  const { subject } = useParams(); // subject like 'chemistry-254347'
+  const [chapters, setChapters] = useState([]);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('https://api.penpencil.co/v3/batches/65df241600f257001881fbbd/details')
+    // 👇 Only one place to manually assign batch & subject mapping
+    const subjectApiMap = {
+      'chemistry-254347': 'https://api.penpencil.co/v2/batches/65df241600f257001881fbbd/subject/chemistry-254347/contents?page=1',
+      'physics-254348': 'https://api.penpencil.co/v2/batches/65df241600f257001881fbbd/subject/physics-254348/contents?page=1',
+      'maths-254349': 'https://api.penpencil.co/v2/batches/65df241600f257001881fbbd/subject/maths-254349/contents?page=1',
+      // add more if needed
+    };
+
+    const apiUrl = subjectApiMap[subject];
+    if (!apiUrl) {
+      setError('Invalid subject.');
+      return;
+    }
+
+    fetch(apiUrl)
       .then((res) => res.json())
       .then((data) => {
-        const subs = data?.data?.subjects;
-        if (Array.isArray(subs)) {
-          setSubjects(subs);
+        if (data.success && Array.isArray(data.data)) {
+          setChapters(data.data);
         } else {
-          setError('Subjects not found in API response.');
+          setError('No chapters found for this subject.');
         }
       })
-      .catch((err) => setError('Failed to load subjects: ' + err.message));
-  }, []);
+      .catch((err) => setError('Fetch error: ' + err.message));
+  }, [subject]);
 
-  const goToSubject = (slug) => {
-    navigate(`/subject/${slug}`);
+  const goToChapter = (slug) => {
+    navigate(`/chapter/${slug}`);
   };
 
   return (
     <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
-      <h2>Subjects</h2>
+      <h2>{subject.split('-')[0].toUpperCase()} Chapters</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px' }}>
-        {subjects.map((subject) => (
+        {chapters.map((ch) => (
           <div
-            key={subject._id}
-            onClick={() => goToSubject(subject.slug)}
+            key={ch._id}
+            onClick={() => goToChapter(ch.slug)}
             style={{
-              cursor: 'pointer',
               border: '1px solid #ccc',
               borderRadius: '10px',
-              padding: '10px',
-              width: '200px',
-              textAlign: 'center',
-              background: '#f8f8f8',
+              padding: '15px',
+              width: '280px',
+              cursor: 'pointer',
+              background: '#f9f9f9',
             }}
           >
-            <img
-              src={subject.icon}
-              alt={subject.name}
-              style={{ width: '50px', height: '50px', marginBottom: '10px' }}
-            />
-            <h4>{subject.name}</h4>
-            <p>{subject.teacher?.name || 'No Teacher'}</p>
+            <h4>{ch.name}</h4>
+            <p>Type: {ch.type}</p>
+            <p>Videos: {ch.videos}</p>
+            <p>Exercises: {ch.exercises}</p>
+            <p>Notes: {ch.notes}</p>
           </div>
         ))}
       </div>
@@ -57,4 +68,4 @@ const Subjects = () => {
   );
 };
 
-export default Subjects;
+export default SubjectChapters;
