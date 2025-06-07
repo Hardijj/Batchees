@@ -9,23 +9,16 @@ const LectureList = () => {
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
-        const token = localStorage.getItem('access_token');
-        const res = await fetch('https://api.penpencil.co/v3/batches/65df241600f257001881fbbd/details', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
+        const res = await fetch('https://api.penpencil.co/v3/batches/65df241600f257001881fbbd/details');
         const data = await res.json();
 
-        if (data.success) {
+        if (data.success !== false && data.batch?.subjects) {
           setSubjects(data.batch.subjects);
         } else {
           setError(data.message || 'Failed to load subjects');
         }
       } catch (err) {
-        setError('Error fetching data');
+        setError('Error fetching data: ' + err.message);
       }
     };
 
@@ -39,24 +32,28 @@ const LectureList = () => {
   return (
     <div style={{ padding: '20px' }}>
       <h2>Subjects</h2>
-      {error && <p>{error}</p>}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+        gap: '20px'
+      }}>
         {subjects.map((subject) => (
           <div
             key={subject._id}
             onClick={() => goToSubject(subject.slug)}
             style={{
-              border: '1px solid #ccc',
-              borderRadius: '8px',
-              padding: '10px',
+              border: '1px solid #ddd',
+              padding: '15px',
+              borderRadius: '10px',
               cursor: 'pointer',
-              backgroundColor: '#f9f9f9',
-              boxShadow: '0 1px 4px rgba(0,0,0,0.1)'
+              backgroundColor: '#f5f5f5',
+              textAlign: 'center'
             }}
           >
-            <img src={subject.icon} alt={subject.name} style={{ width: '40px', height: '40px' }} />
+            <img src={subject.icon} alt={subject.name} style={{ width: '50px', height: '50px' }} />
             <h3>{subject.name}</h3>
-            <p>Teacher: {subject.teacher?.name || 'N/A'}</p>
+            <p>{subject.teacher?.name || 'No Teacher'}</p>
           </div>
         ))}
       </div>
