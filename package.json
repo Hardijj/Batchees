@@ -17,6 +17,7 @@
     "videojs-mobile-ui": "^1.0.2",
     "videojs-seek-buttons": "^1.5.2",
     "videojs-responsive-controls": "^1.0.1",
+    "shaka-player": "^4.6.0", 
     "plyr": "^3.7.8"
   },
   "scripts": {
