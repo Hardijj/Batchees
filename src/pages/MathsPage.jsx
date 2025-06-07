@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const LectureList = () => {
+const Subjects = () => {
   const [subjects, setSubjects] = useState([]);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -12,10 +12,10 @@ const LectureList = () => {
         const res = await fetch('https://api.penpencil.co/v3/batches/65df241600f257001881fbbd/details');
         const data = await res.json();
 
-        if (data.success !== false && data.batch?.subjects) {
+        if (data && data.batch && Array.isArray(data.batch.subjects)) {
           setSubjects(data.batch.subjects);
         } else {
-          setError(data.message || 'Failed to load subjects');
+          setError('Subjects data not found in the response.');
         }
       } catch (err) {
         setError('Error fetching data: ' + err.message);
@@ -61,4 +61,4 @@ const LectureList = () => {
   );
 };
 
-export default LectureList;
+export default Subjects;
