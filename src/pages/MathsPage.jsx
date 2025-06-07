@@ -1,40 +1,50 @@
-import React, { useEffect, useRef } from 'react';
-import shaka from 'shaka-player';
+import React, { useEffect, useState } from "react";
 
 const LectureList = () => {
-  const videoRef = useRef(null);
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
+
+  const apiUrl =
+    "https://api.penpencil.co/v2/batches/65df241600f257001881fbbd/subject/chemistry-268936/topics?page=1";
 
   useEffect(() => {
-    // Initialize Shaka Player
-    const player = new shaka.Player(videoRef.current);
+    const token = localStorage.getItem("access_token");
 
-    // Optional: Log errors
-    player.addEventListener('error', (e) => {
-      console.error('Shaka error:', e.detail);
-    });
+    if (!token) {
+      setError("❌ No access_token found in localStorage.");
+      return;
+    }
 
-    // Load the DASH stream
-    player.load(
-      "https://sec-prod-mediacdn.pw.live/2ac4181c-f39d-42d6-9634-31768b77f308/master.mpd?URLPrefix=aHR0cHM6Ly9zZWMtcHJvZC1tZWRpYWNkbi5wdy5saXZlLzJhYzQxODFjLWYzOWQtNDJkNi05NjM0LTMxNzY4Yjc3ZjMwOA&Expires=1749291993&KeyName=pw-prod-key&Signature=3DbFLCAGniMP7gmYH8bu8pxlwXxhZeYpREpV8eSlIw6hZa1zUb1-Xm11Q14qCmcyyFGsX8U2XV9d5ivwidbgCw"
-    ).then(() => {
-      console.log('Video loaded!');
-    }).catch((err) => {
-      console.error('Error loading video:', err);
-    });
-
-    // Cleanup
-    return () => player.destroy();
+    fetch(apiUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("❌ API request failed.");
+        return res.json();
+      })
+      .then((json) => {
+        if (json.success) {
+          setData(json);
+        } else {
+          setData(json);
+        }
+      })
+      .catch((err) => {
+        setError(err.message);
+      });
   }, []);
+
+  if (error) return <pre>{error}</pre>;
+  if (!data) return <p>⏳ Loading content...</p>;
 
   return (
     <div>
-      <video
-        ref={videoRef}
-        width="100%"
-        controls
-        autoPlay
-        style={{ backgroundColor: 'black' }}
-      />
+      <h2>✅ Full API Response</h2>
+      <pre>
+        {JSON.stringify(data, null, 2)}
+      </pre>
     </div>
   );
 };
